@@ -17,7 +17,8 @@ public class Field extends View {
     Paint p = new Paint();
     Bitmap back;
     Rect backrect;
-    Rect mysummons,mysupport;
+    Rect mysummons,mysupport,mydeck;
+    Rect enemysummons,enemysupports,enemydeck;
 
 
     public Field(Context context) {
@@ -25,8 +26,12 @@ public class Field extends View {
         Resources res = this.getContext().getResources();
         back = BitmapFactory.decodeResource(res, R.drawable.back);
         backrect = new Rect(0,0,back.getWidth(),back.getHeight());
-        mysummons = new Rect(480,720,600,900);
-        mysupport = new Rect(480,920,600,1100);
+        mysummons = new Rect(481,720,599,892);
+        mysupport = new Rect(481,912,599,1084);
+        mydeck = new Rect(800,820,918,992);
+        enemysummons = new Rect(481,348,599,520);
+        enemysupports = new Rect(481,156,599,328);
+        enemydeck = new Rect(163,248,281,420);
     }
 
     @Override
@@ -35,5 +40,10 @@ public class Field extends View {
 
         c.drawBitmap(back,backrect,mysummons,p);
         c.drawBitmap(back,backrect,mysupport,p);
+        c.drawBitmap(back,backrect,mydeck,p);
+        c.drawBitmap(back,backrect,enemysummons,p);
+        c.drawBitmap(back,backrect,enemysupports,p);
+        c.drawBitmap(back,backrect,enemydeck,p);
+
     }
 }
