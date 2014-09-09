@@ -15,8 +15,8 @@ import android.view.View;
  */
 public class Field extends View {
     Paint p = new Paint();
-    Bitmap back;
-    Rect backrect;
+    Bitmap back,s0002;
+    Rect backrect,srect;
     Rect mysummons,mysupport,mydeck;
     Rect enemysummons,enemysupports,enemydeck;
 
@@ -25,6 +25,8 @@ public class Field extends View {
         super(context);
         Resources res = this.getContext().getResources();
         back = BitmapFactory.decodeResource(res, R.drawable.back);
+        s0002 = BitmapFactory.decodeResource(res, R.drawable.s0002);
+        srect = new Rect(0,0,s0002.getWidth(),s0002.getHeight());
         backrect = new Rect(0,0,back.getWidth(),back.getHeight());
         mysummons = new Rect(481,720,599,892);
         mysupport = new Rect(481,912,599,1084);
@@ -38,7 +40,7 @@ public class Field extends View {
     protected void onDraw(Canvas c) {
         super.onDraw(c);
 
-        c.drawBitmap(back,backrect,mysummons,p);
+        c.drawBitmap(s0002,srect,mysummons,p);
         c.drawBitmap(back,backrect,mysupport,p);
         c.drawBitmap(back,backrect,mydeck,p);
         c.drawBitmap(back,backrect,enemysummons,p);
