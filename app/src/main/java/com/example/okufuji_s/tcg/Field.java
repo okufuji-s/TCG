@@ -52,12 +52,16 @@ public class Field extends View {
         int x;
         int y;
         int z;
-        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3) {
+        int rank;
+        int summonscolor;   //red=0,blue=1,green=2,yellow=3
+        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3, int i4, int i5) {
             super(c,bmp);
             HP = i;
             x = i1;
             y = i2;
             z = i3;
+            rank = i4;
+            summonscolor = i5;
         }
     }
 
@@ -84,22 +88,22 @@ public class Field extends View {
         enemysupports = new Rect(481,156,599,328);
         enemydeck = new Rect(163,248,281,420);
 
-        card[0] = new MonsterCard(context, R.drawable.s0001, 100,100,100,100);
-        card[1] = new MonsterCard(context, R.drawable.s0002, 100,100,100,100);
-        card[2] = new MonsterCard(context, R.drawable.s0003, 100,100,100,100);
-        card[3] = new MonsterCard(context, R.drawable.s0004, 100,100,100,100);
-        card[4] = new MonsterCard(context, R.drawable.s0005, 100,100,100,100);
-        card[5] = new MonsterCard(context, R.drawable.s0006, 100,100,100,100);
-        card[6] = new MonsterCard(context, R.drawable.s0007, 100,100,100,100);
-        card[7] = new MonsterCard(context, R.drawable.s0008, 100,100,100,100);
-        card[8] = new MonsterCard(context, R.drawable.s0009, 100,100,100,100);
-        card[9] = new MonsterCard(context, R.drawable.s0010, 100,100,100,100);
-        card[10] = new MonsterCard(context, R.drawable.s0011, 100,100,100,100);
-        card[11] = new MonsterCard(context, R.drawable.s0012, 100,100,100,100);
-        card[12] = new MonsterCard(context, R.drawable.s0013, 100,100,100,100);
-        card[13] = new MonsterCard(context, R.drawable.s0014, 100,100,100,100);
-        card[14] = new MonsterCard(context, R.drawable.s0015, 100,100,100,100);
-        card[15] = new MonsterCard(context, R.drawable.s0016, 100,100,100,100);
+        card[0] = new MonsterCard(context, R.drawable.s0001, 100,100,100,100,0,0);
+        card[1] = new MonsterCard(context, R.drawable.s0002, 100,100,100,100,0,1);
+        card[2] = new MonsterCard(context, R.drawable.s0003, 100,100,100,100,0,2);
+        card[3] = new MonsterCard(context, R.drawable.s0004, 100,100,100,100,0,3);
+        card[4] = new MonsterCard(context, R.drawable.s0005, 100,100,100,100,1,0);
+        card[5] = new MonsterCard(context, R.drawable.s0006, 100,100,100,100,1,1);
+        card[6] = new MonsterCard(context, R.drawable.s0007, 100,100,100,100,1,2);
+        card[7] = new MonsterCard(context, R.drawable.s0008, 100,100,100,100,1,3);
+        card[8] = new MonsterCard(context, R.drawable.s0009, 100,100,100,100,2,0);
+        card[9] = new MonsterCard(context, R.drawable.s0010, 100,100,100,100,2,1);
+        card[10] = new MonsterCard(context, R.drawable.s0011, 100,100,100,100,2,2);
+        card[11] = new MonsterCard(context, R.drawable.s0012, 100,100,100,100,2,3);
+        card[12] = new MonsterCard(context, R.drawable.s0013, 100,100,100,100,3,0);
+        card[13] = new MonsterCard(context, R.drawable.s0014, 100,100,100,100,3,1);
+        card[14] = new MonsterCard(context, R.drawable.s0015, 100,100,100,100,3,2);
+        card[15] = new MonsterCard(context, R.drawable.s0016, 100,100,100,100,3,3);
         card[16] = new SupportCard(context, R.drawable.s1001, 0);
         card[17] = new SupportCard(context, R.drawable.s1002, 0);
         card[18] = new SupportCard(context, R.drawable.s1003, 0);
