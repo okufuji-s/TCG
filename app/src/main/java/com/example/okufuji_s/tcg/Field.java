@@ -143,19 +143,17 @@ public class Field extends View {
         //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
         //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
         c.drawBitmap(test.bitmap,test.rect,mydeck,p);
-
+        /*
         p.setARGB(255,100,100,255);
         p.setTextSize(100);
         c.drawText(String.valueOf(displaywidth),100,100,p);
+        */
 
-        /*
         Rect[] myhandsrect = new Rect[myhands.size()];
         for(int i=0; i<myhands.size(); i++){
             myhandsrect[i] = new Rect(displaywidth/myhands.size()*i,1200,displaywidth/myhands.size()*i+118,1392);
             test=myhands.get(i);
             c.drawBitmap(test.bitmap,test.rect,myhandsrect[i],p);
         }
-        */
-
     }
 }
