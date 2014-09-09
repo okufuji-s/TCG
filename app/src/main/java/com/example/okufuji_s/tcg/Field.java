@@ -7,8 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.util.Collections;
 import java.util.Random;
@@ -19,7 +22,7 @@ import java.util.Vector;
  */
 public class Field extends View {
     Paint p = new Paint();
-    Bitmap back;
+    Bitmap back,width;
     Rect backrect;
     Rect mysummons,mysupport,mydeck;
     Rect enemysummons,enemysupports,enemydeck;
@@ -30,6 +33,8 @@ public class Field extends View {
     Vector<Card> enemydecks = new Vector<Card>();
     Vector<Card> myhands = new Vector<Card>();
     Vector<Card> enemyhands = new Vector<Card>();
+
+    int displaywidth;
 
     class Card {
         Bitmap bitmap;
@@ -119,6 +124,13 @@ public class Field extends View {
             myhands.addElement(mydecks.remove(0));
         }
 
+            // リソースからbitmapを作成
+            width = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
+            // WindowManager取得
+            WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+            // Displayインスタンス生成
+            Display dp = wm.getDefaultDisplay();
+            displaywidth = dp.getWidth();
     }
 
     @Override
@@ -127,11 +139,23 @@ public class Field extends View {
         Card test;
         test = mydecks.get(0);
 
-
         c.drawBitmap(card[0].bitmap,card[0].rect,mysummons,p);
         //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
         //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
         c.drawBitmap(test.bitmap,test.rect,mydeck,p);
+
+        p.setARGB(255,100,100,255);
+        p.setTextSize(100);
+        c.drawText(String.valueOf(displaywidth),100,100,p);
+
+        /*
+        Rect[] myhandsrect = new Rect[myhands.size()];
+        for(int i=0; i<myhands.size(); i++){
+            myhandsrect[i] = new Rect(displaywidth/myhands.size()*i,1200,displaywidth/myhands.size()*i+118,1392);
+            test=myhands.get(i);
+            c.drawBitmap(test.bitmap,test.rect,myhandsrect[i],p);
+        }
+        */
 
     }
 }
