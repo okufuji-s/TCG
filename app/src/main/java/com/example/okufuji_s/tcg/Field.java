@@ -122,7 +122,9 @@ public class Field extends View {
         Collections.shuffle(enemydecks);
         for(int i=0;i<5;i++) {
             myhands.addElement(mydecks.remove(0));
+            enemyhands.addElement(enemydecks.remove(0));
         }
+
 
             // リソースからbitmapを作成
             width = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
@@ -154,6 +156,12 @@ public class Field extends View {
             myhandsrect[i] = new Rect(displaywidth/myhands.size()*i,1200,displaywidth/myhands.size()*i+118,1392);
             test=myhands.get(i);
             c.drawBitmap(test.bitmap,test.rect,myhandsrect[i],p);
+        }
+        Rect[] enemyhandsrect = new Rect[enemyhands.size()];
+        for(int i=0; i<myhands.size(); i++){
+            enemyhandsrect[i] = new Rect(displaywidth/enemyhands.size()*i,-120,displaywidth/enemyhands.size()*i+118,72);
+            test=myhands.get(i);
+            c.drawBitmap(back,backrect,enemyhandsrect[i],p);
         }
     }
 }
