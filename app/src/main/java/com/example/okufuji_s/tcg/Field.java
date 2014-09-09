@@ -10,17 +10,26 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
 
+import java.util.Collections;
+import java.util.Random;
+import java.util.Vector;
+
 /**
  * Created by okufuji-s on 2014/09/08.
  */
 public class Field extends View {
     Paint p = new Paint();
-    Bitmap back,s0002,s1002;
-    Bitmap[] card_id;
-    Rect backrect,srect;
+    Bitmap back;
+    Rect backrect;
     Rect mysummons,mysupport,mydeck;
     Rect enemysummons,enemysupports,enemydeck;
+    //Vector<Card> mydecks,enemydecks;
+    int[] decka,deckb;
 
+    Vector<Card> mydecks = new Vector<Card>();
+    Vector<Card> enemydecks = new Vector<Card>();
+    Vector<Card> myhands = new Vector<Card>();
+    Vector<Card> enemyhands = new Vector<Card>();
 
     class Card {
         Bitmap bitmap;
@@ -54,7 +63,7 @@ public class Field extends View {
             effect = e;
         }
     }
-    protected Card[] card = new Card[3];
+    protected Card[] card = new Card[24];
 
     public Field(Context context) {
         super(context);
@@ -70,33 +79,59 @@ public class Field extends View {
         enemysupports = new Rect(481,156,599,328);
         enemydeck = new Rect(163,248,281,420);
 
-        card[0] = new MonsterCard(context, R.drawable.s0002, 100,100,100,100);
-        card[1] = new SupportCard(context, R.drawable.s1002, 0);
-        card[2] = new SupportCard(context, R.drawable.s1002, 0);
-        /*
-        card_id = new Bitmap[3];
-        card_id[0]=back;
-        card_id[1]=s0002;
-        card_id[2]=s1002;
-        */
+        card[0] = new MonsterCard(context, R.drawable.s0001, 100,100,100,100);
+        card[1] = new MonsterCard(context, R.drawable.s0002, 100,100,100,100);
+        card[2] = new MonsterCard(context, R.drawable.s0003, 100,100,100,100);
+        card[3] = new MonsterCard(context, R.drawable.s0004, 100,100,100,100);
+        card[4] = new MonsterCard(context, R.drawable.s0005, 100,100,100,100);
+        card[5] = new MonsterCard(context, R.drawable.s0006, 100,100,100,100);
+        card[6] = new MonsterCard(context, R.drawable.s0007, 100,100,100,100);
+        card[7] = new MonsterCard(context, R.drawable.s0008, 100,100,100,100);
+        card[8] = new MonsterCard(context, R.drawable.s0009, 100,100,100,100);
+        card[9] = new MonsterCard(context, R.drawable.s0010, 100,100,100,100);
+        card[10] = new MonsterCard(context, R.drawable.s0011, 100,100,100,100);
+        card[11] = new MonsterCard(context, R.drawable.s0012, 100,100,100,100);
+        card[12] = new MonsterCard(context, R.drawable.s0013, 100,100,100,100);
+        card[13] = new MonsterCard(context, R.drawable.s0014, 100,100,100,100);
+        card[14] = new MonsterCard(context, R.drawable.s0015, 100,100,100,100);
+        card[15] = new MonsterCard(context, R.drawable.s0016, 100,100,100,100);
+        card[16] = new SupportCard(context, R.drawable.s1001, 0);
+        card[17] = new SupportCard(context, R.drawable.s1002, 0);
+        card[18] = new SupportCard(context, R.drawable.s1003, 0);
+        card[19] = new SupportCard(context, R.drawable.s1004, 0);
+        card[20] = new SupportCard(context, R.drawable.s1005, 0);
+        card[21] = new SupportCard(context, R.drawable.s1006, 0);
+        card[22] = new SupportCard(context, R.drawable.s1007, 0);
+        card[23] = new SupportCard(context, R.drawable.s1008, 0);
+
+        int[] decka = {0,1,2,3,8,9,10,11,16,20};
+        int[] deckb = {4,5,6,7,12,13,14,15,16,20};
+
+        for(int k = 0;k<10;k++){
+            for(int i = 0; i<4;i++) {
+                mydecks.addElement(card[decka[k]]);
+                enemydecks.addElement(card[deckb[k]]);
+            }
+        }
+        Collections.shuffle(mydecks);
+        Collections.shuffle(enemydecks);
+        for(int i=0;i<5;i++) {
+            myhands.addElement(mydecks.remove(0));
+        }
+
     }
 
     @Override
     protected void onDraw(Canvas c) {
         super.onDraw(c);
+        Card test;
+        test = mydecks.get(0);
+
 
         c.drawBitmap(card[0].bitmap,card[0].rect,mysummons,p);
-        c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
-        c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
-
-        /*
-        c.drawBitmap(s0002,srect,mysummons,p);
-        c.drawBitmap(back,backrect,mysupport,p);
-        c.drawBitmap(back,backrect,mydeck,p);
-        c.drawBitmap(back,backrect,enemysummons,p);
-        c.drawBitmap(back,backrect,enemysupports,p);
-        c.drawBitmap(back,backrect,enemydeck,p);
-        */
+        //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
+        //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
+        c.drawBitmap(test.bitmap,test.rect,mydeck,p);
 
     }
 }
