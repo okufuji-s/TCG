@@ -34,7 +34,8 @@ public class Field extends View {
     Vector<Card> enemydecks = new Vector<Card>();
     Vector<Card> myhands = new Vector<Card>();
     Vector<Card> enemyhands = new Vector<Card>();
-    Card mysommons;
+    Vector<Card> mytrash = new Vector<Card>();
+    Vector<Card> enemytrash = new Vector<Card>();
 
     int displaywidth;
 
@@ -128,8 +129,8 @@ public class Field extends View {
         card[22] = new SupportCard(context, R.drawable.s1007, 0);
         card[23] = new SupportCard(context, R.drawable.s1008, 0);
 
-        int[] decka = {0, 1, 4, 5, 8, 9, 2, 3, 16, 20};
-        int[] deckb = {2, 3, 6, 7, 10, 11, 1, 0, 16, 20};
+        int[] decka = {0, 11, 14, 15, 18, 19, 12, 13, 16, 20};
+        int[] deckb = {2, 13, 10, 10, 10, 11, 11, 10, 11, 10};
 
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
@@ -139,9 +140,40 @@ public class Field extends View {
         }
         Collections.shuffle(mydecks);
         Collections.shuffle(enemydecks);
-        for (int i = 0; i < 5; i++) {
-            myhands.addElement(mydecks.remove(0));
-            enemyhands.addElement(enemydecks.remove(0));
+        mymulligan();
+        enemymulligan();
+        boolean myexchange=false,enemyexchange=false;
+        while(myexchange==false){
+            Card checkcard;
+            for(int i = 0; i<myhands.size(); i++){
+                checkcard = myhands.get(i);
+                Class cls = checkcard.getClass();
+                if(cls == MonsterCard.class){
+                    MonsterCard m = (MonsterCard) checkcard;
+                    if(m.rank==0){
+                        myexchange = true;
+                    }
+                }
+            }
+            if(myexchange == false){
+                mymulligan();
+            }
+        }
+        while(enemyexchange==false){
+            Card checkcard;
+            for(int i = 0; i<enemyhands.size(); i++){
+                checkcard = enemyhands.get(i);
+                Class cls = checkcard.getClass();
+                if(cls == MonsterCard.class){
+                    MonsterCard m = (MonsterCard) checkcard;
+                    if(m.rank==0){
+                        enemyexchange = true;
+                    }
+                }
+            }
+            if(enemyexchange == false){
+                enemymulligan();
+            }
         }
 
 
@@ -156,6 +188,21 @@ public class Field extends View {
         state = Game_state.setfirst;
     }
 
+    void enemymulligan(){
+        enemytrash.addAll(enemyhands);
+        enemyhands.clear();
+        for (int i = 0; i < 5; i++) {
+            enemyhands.addElement(enemydecks.remove(0));
+        }
+    }
+    void mymulligan(){
+        mytrash.addAll(myhands);
+        myhands.clear();
+        for (int i = 0; i < 5; i++) {
+            myhands.addElement(mydecks.remove(0));
+        }
+    }
+
     @Override
     protected void onDraw(Canvas c) {
         super.onDraw(c);
@@ -164,10 +211,14 @@ public class Field extends View {
         //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
         //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
         c.drawBitmap(back, backrect, mydeck, p);
+        c.drawBitmap(back, backrect, enemydeck, p);
         p.setARGB(255,0,0,0);
         p.setTextSize(50);
         p.setAntiAlias(true);
         c.drawText(String.valueOf(mydecks.size()),810,870,p);
+        c.drawText(String.valueOf(enemydecks.size()),173,298,p);
+        c.drawText("trash:" + String.valueOf(mytrash.size()),810,1100,p);
+        c.drawText("trash:" + String.valueOf(enemytrash.size()),173,208,p);
         /*
         p.setARGB(255,100,100,255);
         p.setTextSize(100);
@@ -240,13 +291,7 @@ public class Field extends View {
                         Random random = new Random();
                         int ran = random.nextInt(s.size());
                         enemyplaysummons = s.remove(ran);
-                        if(s.size()!=0) {
-                            while (s.size() == 0) {
-                                int j = 0;
-                                enemyhands.addElement(s.remove(j));
-                                j++;
-                            }
-                        }
+                        enemyhands.addAll(s);
                     }
                 }
             }
