@@ -65,16 +65,16 @@ public class Field extends View {
         int y;
         int z;
         int rank;
-        int summonscolor;   //red=0,blue=1,green=2,yellow=3
+        String summonscolor;   //red=0,blue=1,green=2,yellow=3
 
-        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3, int i4, int i5) {
+        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3, int i4, String s) {
             super(c, bmp);
             HP = i;
             x = i1;
             y = i2;
             z = i3;
             rank = i4;
-            summonscolor = i5;
+            summonscolor = s;
         }
     }
 
@@ -88,7 +88,9 @@ public class Field extends View {
     }
 
     protected Card[] card = new Card[24];
-    Card myplaysummons,enemyplaysummons; //場に出ているものそれ自体
+    MonsterCard myplaysummons,enemyplaysummons; //場に出ているものそれ自体
+    int my_rank=0,my_HP,enemy_rank=0,enemy_HP;
+    String my_color,enemy_color;
 
     public Field(Context context) {
         super(context);
@@ -104,22 +106,22 @@ public class Field extends View {
         enemysupports = new Rect(481, 156, 599, 328);
         enemydeck = new Rect(163, 248, 281, 420);
 
-        card[0] = new MonsterCard(context, R.drawable.s0001, 100, 100, 100, 100, 0, 0);
-        card[1] = new MonsterCard(context, R.drawable.s0002, 100, 100, 100, 100, 0, 1);
-        card[2] = new MonsterCard(context, R.drawable.s0003, 100, 100, 100, 100, 0, 2);
-        card[3] = new MonsterCard(context, R.drawable.s0004, 100, 100, 100, 100, 0, 3);
-        card[4] = new MonsterCard(context, R.drawable.s0005, 100, 100, 100, 100, 1, 0);
-        card[5] = new MonsterCard(context, R.drawable.s0006, 100, 100, 100, 100, 1, 1);
-        card[6] = new MonsterCard(context, R.drawable.s0007, 100, 100, 100, 100, 1, 2);
-        card[7] = new MonsterCard(context, R.drawable.s0008, 100, 100, 100, 100, 1, 3);
-        card[8] = new MonsterCard(context, R.drawable.s0009, 100, 100, 100, 100, 2, 0);
-        card[9] = new MonsterCard(context, R.drawable.s0010, 100, 100, 100, 100, 2, 1);
-        card[10] = new MonsterCard(context, R.drawable.s0011, 100, 100, 100, 100, 2, 2);
-        card[11] = new MonsterCard(context, R.drawable.s0012, 100, 100, 100, 100, 2, 3);
-        card[12] = new MonsterCard(context, R.drawable.s0013, 100, 100, 100, 100, 3, 0);
-        card[13] = new MonsterCard(context, R.drawable.s0014, 100, 100, 100, 100, 3, 1);
-        card[14] = new MonsterCard(context, R.drawable.s0015, 100, 100, 100, 100, 3, 2);
-        card[15] = new MonsterCard(context, R.drawable.s0016, 100, 100, 100, 100, 3, 3);
+        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 100, 100, 100, 0, "Red");
+        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 100, 100, 100, 0, "Blue");
+        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 100, 100, 100, 0, "Green");
+        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 100, 100, 100, 0, "Yellow");
+        card[4] = new MonsterCard(context, R.drawable.s0005, 100, 100, 100, 100, 1, "Red");
+        card[5] = new MonsterCard(context, R.drawable.s0006, 100, 100, 100, 100, 1, "Blue");
+        card[6] = new MonsterCard(context, R.drawable.s0007, 100, 100, 100, 100, 1, "Green");
+        card[7] = new MonsterCard(context, R.drawable.s0008, 100, 100, 100, 100, 1, "Yellow");
+        card[8] = new MonsterCard(context, R.drawable.s0009, 100, 100, 100, 100, 2, "Red");
+        card[9] = new MonsterCard(context, R.drawable.s0010, 100, 100, 100, 100, 2, "Blue");
+        card[10] = new MonsterCard(context, R.drawable.s0011, 100, 100, 100, 100, 2, "Green");
+        card[11] = new MonsterCard(context, R.drawable.s0012, 100, 100, 100, 100, 2, "Yellow");
+        card[12] = new MonsterCard(context, R.drawable.s0013, 100, 100, 100, 100, 3, "Red");
+        card[13] = new MonsterCard(context, R.drawable.s0014, 100, 100, 100, 100, 3, "Blue");
+        card[14] = new MonsterCard(context, R.drawable.s0015, 100, 100, 100, 100, 3, "Green");
+        card[15] = new MonsterCard(context, R.drawable.s0016, 100, 100, 100, 100, 3, "Yellow");
         card[16] = new SupportCard(context, R.drawable.s1001, 0);
         card[17] = new SupportCard(context, R.drawable.s1002, 0);
         card[18] = new SupportCard(context, R.drawable.s1003, 0);
@@ -129,15 +131,15 @@ public class Field extends View {
         card[22] = new SupportCard(context, R.drawable.s1007, 0);
         card[23] = new SupportCard(context, R.drawable.s1008, 0);
 
-        int[] decka = {0, 11, 14, 15, 18, 19, 12, 13, 16, 20};
-        int[] deckb = {2, 13, 10, 10, 10, 11, 11, 10, 11, 10};
-
+        int[] decka = {0, 1, 14, 15, 18, 19, 12, 13, 16, 20};
+        int[] deckb = {2, 3, 10, 10, 10, 11, 11, 10, 11, 10};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
                 enemydecks.addElement(card[deckb[k]]);
             }
-        }
+        }                                                   //デッキ作成箇所
+
         Collections.shuffle(mydecks);
         Collections.shuffle(enemydecks);
         mymulligan();
@@ -219,6 +221,12 @@ public class Field extends View {
         c.drawText(String.valueOf(enemydecks.size()),173,298,p);
         c.drawText("trash:" + String.valueOf(mytrash.size()),810,1100,p);
         c.drawText("trash:" + String.valueOf(enemytrash.size()),173,208,p);
+        c.drawText("HP:" + String.valueOf(my_HP),173,730,p);
+        c.drawText("rank:" + String.valueOf(my_rank),173,810,p);
+        c.drawText("color:" + my_color,173,870,p);
+        c.drawText("HP:" + String.valueOf(enemy_HP),630,308,p);
+        c.drawText("rank:" + String.valueOf(enemy_rank),630,388,p);
+        c.drawText("color:" + enemy_color,630,448,p);
         /*
         p.setARGB(255,100,100,255);
         p.setTextSize(100);
@@ -263,7 +271,7 @@ public class Field extends View {
     }
 
     void firstsummons(){
-        Card check;
+        Card check,putsummon;
         for (int i = 0; i < myhands.size(); i++) {
             if (displaywidth / myhands.size() * i < touchx && touchx < displaywidth / myhands.size() * i + 118 && 1200 < touchy && touchy < 1392) {
                 check = myhands.get(i);
@@ -274,8 +282,10 @@ public class Field extends View {
 
                     if (m.rank == 0) {   /*0なら*/
                         Vector<Card> s = new Vector<Card>();
-                        myplaysummons = myhands.remove(i);
-                        state = Game_state.waitenemysetfirst;
+                        putsummon = myhands.remove(i);
+                        myplaysummons = (MonsterCard)putsummon;
+                        my_HP = myplaysummons.HP;
+                        my_color = myplaysummons.summonscolor;
                         //相手のランク0を出すところ
                         for(int k=0; k<enemyhands.size(); k++){
                             check = enemyhands.get(k);
@@ -290,8 +300,11 @@ public class Field extends View {
                         }
                         Random random = new Random();
                         int ran = random.nextInt(s.size());
-                        enemyplaysummons = s.remove(ran);
+                        putsummon = s.remove(ran);
+                        enemyplaysummons = (MonsterCard)putsummon;
                         enemyhands.addAll(s);
+                        enemy_HP = enemyplaysummons.HP;
+                        enemy_color = enemyplaysummons.summonscolor;
                     }
                 }
             }
