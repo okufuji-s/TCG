@@ -47,6 +47,7 @@ public class Field extends View {
     int touchx, touchy;  //触った場所の座標
 
     int turn_count = 0;
+    int attackcount = 0;
 
     enum Game_state {
         start,
@@ -54,6 +55,8 @@ public class Field extends View {
         mydraw,
         mybattle,
         waitbuttle,
+        enemydraw,
+        enemybuttle,
     }
 
     Game_state state = Game_state.mydraw;
@@ -281,6 +284,7 @@ public class Field extends View {
             c.drawText("[先行]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
         }
+        if(state == Game_state.enemydraw) c.drawText("あいてのターンをタップで始めます。",100,595,p);
 
         if (myplaysummons != null) {
             c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
@@ -315,7 +319,9 @@ public class Field extends View {
             Log.d("test",String.valueOf(touchy));
             if (state == Game_state.mybattle) {
                 selectbutton();
-                Field.this.invalidate();
+                wait(1,1000);
+                turn_count++;
+                if(attackcount == 2) state = Game_state.enemydraw;
             }
             if (state == Game_state.mydraw) {
                 mydraw();
@@ -378,9 +384,21 @@ public class Field extends View {
     }
 
     void mydraw() {
+        attackcount = 0;
+        myitasou = false;
+        enemyitasou = false;
         myhands.addElement(mydecks.remove(0));
         if (turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         state = Game_state.mybattle;
+    }
+
+    void enemydraw(){
+        attackcount = 0;
+        myitasou = false;
+        enemyitasou = false;
+        enemyhands.addElement(enemydecks.remove(0));
+        if (turn_count != 0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
+        state = Game_state.enemybuttle;
     }
 
     void selectbutton() {
@@ -393,7 +411,6 @@ public class Field extends View {
         if (i == 1) enemyselectbutton = "y";
         if (i == 2) enemyselectbutton = "z";
         state = Game_state.waitbuttle;
-        wait(1, 1000);          // to myattack
     }
 
     void myattack() {
@@ -413,7 +430,8 @@ public class Field extends View {
             }
         }
         if(enemy_HP < 0) enemysummonsdead = true;
-        wait(2,1000);           // to enemyattack
+        attackcount++;
+        if(attackcount <=1) wait(2,1000);         // to enemyattack
     }
     void enemyattack(){
         enemyitasou = false;
@@ -432,7 +450,8 @@ public class Field extends View {
             }
         }
         if(my_HP < 0) mysummonsdead = true;
-        //wait(1,1000);
+        attackcount++;
+        if(attackcount <= 1) wait(1,1000);         // to myattack
     }
 
     void wait(int i, int t) {
