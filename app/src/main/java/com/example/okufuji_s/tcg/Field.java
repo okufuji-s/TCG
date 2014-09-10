@@ -160,11 +160,14 @@ public class Field extends View {
     protected void onDraw(Canvas c) {
         super.onDraw(c);
         Card test;
-        test = mydecks.get(0);
 
         //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
         //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
-        c.drawBitmap(test.bitmap, test.rect, mydeck, p);
+        c.drawBitmap(back, backrect, mydeck, p);
+        p.setARGB(255,0,0,0);
+        p.setTextSize(50);
+        p.setAntiAlias(true);
+        c.drawText(String.valueOf(mydecks.size()),810,870,p);
         /*
         p.setARGB(255,100,100,255);
         p.setTextSize(100);
@@ -201,48 +204,52 @@ public class Field extends View {
             touchy = (int) ev.getY();
             if(state == Game_state.setfirst){
                 //最初にランク0を出そうとするところ
-                Card check;
-                for (int i = 0; i < myhands.size(); i++) {
-                    if (displaywidth / myhands.size() * i < touchx && touchx < displaywidth / myhands.size() * i + 118 && 1200 < touchy && touchy < 1392) {
-                        check = myhands.get(i);
-                        Class cls = check.getClass();
-                        if (cls == MonsterCard.class) {
-                            MonsterCard m;
-                            m = (MonsterCard) check;
+                firstsummons();
+            }
+            Field.this.invalidate();
+        }
+        return true;
+    }
 
-                            if (m.rank == 0) {   /*0なら*/
-                                Vector<Card> s = new Vector<Card>();
-                                myplaysummons = myhands.remove(i);
-                                state = Game_state.waitenemysetfirst;
-                                //相手のランク0を出すところ
-                                for(int k=0; k<enemyhands.size(); k++){
-                                    check = enemyhands.get(k);
-                                    cls = check.getClass();
-                                    if(cls == MonsterCard.class){
-                                        MonsterCard n = (MonsterCard) check;
-                                        if (n.rank==0){
-                                            s.addElement(enemyhands.remove(k));
-                                        }
-                                    }
+    void firstsummons(){
+        Card check;
+        for (int i = 0; i < myhands.size(); i++) {
+            if (displaywidth / myhands.size() * i < touchx && touchx < displaywidth / myhands.size() * i + 118 && 1200 < touchy && touchy < 1392) {
+                check = myhands.get(i);
+                Class cls = check.getClass();
+                if (cls == MonsterCard.class) {
+                    MonsterCard m;
+                    m = (MonsterCard) check;
 
+                    if (m.rank == 0) {   /*0なら*/
+                        Vector<Card> s = new Vector<Card>();
+                        myplaysummons = myhands.remove(i);
+                        state = Game_state.waitenemysetfirst;
+                        //相手のランク0を出すところ
+                        for(int k=0; k<enemyhands.size(); k++){
+                            check = enemyhands.get(k);
+                            cls = check.getClass();
+                            if(cls == MonsterCard.class){
+                                MonsterCard n = (MonsterCard) check;
+                                if (n.rank==0){
+                                    s.addElement(enemyhands.remove(k));
                                 }
-                                Random random = new Random();
-                                int ran = random.nextInt(s.size());
-                                enemyplaysummons = s.remove(ran);
-                                if(s.size()!=0) {
-                                    while (s.size() == 0) {
-                                        int j = 0;
-                                        enemyhands.addElement(s.remove(j));
-                                        j++;
-                                    }
-                                }
+                            }
+
+                        }
+                        Random random = new Random();
+                        int ran = random.nextInt(s.size());
+                        enemyplaysummons = s.remove(ran);
+                        if(s.size()!=0) {
+                            while (s.size() == 0) {
+                                int j = 0;
+                                enemyhands.addElement(s.remove(j));
+                                j++;
                             }
                         }
                     }
                 }
             }
-            Field.this.invalidate();
         }
-        return true;
     }
 }
