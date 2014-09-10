@@ -28,12 +28,13 @@ import java.util.Vector;
 public class Field extends View {
     Paint p = new Paint();
     Paint button = new Paint();
-    Bitmap back, width;
-    Rect backrect;
+    Bitmap back, width,itai;
+    Rect backrect,itairect;
     Rect mysummons, mysupport, mydeck;
     Rect enemysummons, enemysupports, enemydeck;
     //Vector<Card> mydecks,enemydecks;
-    int[] decka, deckb;
+    boolean myitasou=false,enemyitasou=false;
+
 
     Vector<Card> mydecks = new Vector<Card>();
     Vector<Card> enemydecks = new Vector<Card>();
@@ -140,6 +141,8 @@ public class Field extends View {
         Resources res = context.getResources();
         back = BitmapFactory.decodeResource(res, R.drawable.back);
         backrect = new Rect(0, 0, back.getWidth(), back.getHeight());
+        itai = BitmapFactory.decodeResource(res, R.drawable.itai);
+        itairect = new Rect(0,0,itai.getWidth(),itai.getHeight());
 
         mysummons = new Rect(481, 720, 599, 892);
         mysupport = new Rect(481, 912, 599, 1084);
@@ -253,6 +256,7 @@ public class Field extends View {
         super.onDraw(c);
         Card test;
 
+
         c.drawBitmap(back, backrect, mydeck, p);
         c.drawBitmap(back, backrect, enemydeck, p);
         p.setARGB(255, 0, 0, 0);
@@ -297,6 +301,8 @@ public class Field extends View {
             test = enemyhands.get(i);
             c.drawBitmap(back, backrect, enemyhandsrect[i], p);
         }
+        if(myitasou == true) c.drawBitmap(itai,itairect,mysummons,p);
+        if(enemyitasou == true) c.drawBitmap(itai,itairect,enemysummons,p);
 
 
     }
@@ -391,19 +397,39 @@ public class Field extends View {
     }
 
     void myattack() {
+        myitasou = false;
         if (mysummonsdead == false) {
-            if (myselectbutton == "x") enemy_HP -= my_x;    enemyitasou == true;
-            if (myselectbutton == "y") enemy_HP -= my_y;    enemyitasou == true;
-            if (myselectbutton == "z") enemy_HP -= my_z;    enemyitasou == true;
+            if (myselectbutton == "x") {
+                enemy_HP -= my_x;
+                enemyitasou = true;
+            }
+            if (myselectbutton == "y") {
+                enemy_HP -= my_y;
+                enemyitasou = true;
+            }
+            if (myselectbutton == "z") {
+                enemy_HP -= my_z;
+                enemyitasou = true;
+            }
         }
         if(enemy_HP < 0) enemysummonsdead = true;
         wait(2,1000);           // to enemyattack
     }
     void enemyattack(){
+        enemyitasou = false;
         if (enemysummonsdead == false) {
-            if (enemyselectbutton == "x") my_HP -= enemy_x; myitasou == true;
-            if (enemyselectbutton == "y") my_HP -= enemy_y; myitasou == true;
-            if (enemyselectbutton == "z") my_HP -= enemy_z; myitasou == true;
+            if (enemyselectbutton == "x") {
+                my_HP -= my_x;
+                myitasou = true;
+            }
+            if (enemyselectbutton == "y") {
+                my_HP -= my_y;
+                myitasou = true;
+            }
+            if (enemyselectbutton == "z") {
+                my_HP -= my_z;
+                myitasou = true;
+            }
         }
         if(my_HP < 0) mysummonsdead = true;
         //wait(1,1000);
