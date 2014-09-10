@@ -9,13 +9,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.os.Handler;
 
 import java.util.Collections;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 /**
@@ -48,8 +52,10 @@ public class Field extends View {
         setfirst,
         mydraw,
         mybattle,
+        waitbuttle,
     }
-    Game_state state = Game_state.start;
+
+    Game_state state = Game_state.mydraw;
 
     class Card {
         Bitmap bitmap;
@@ -91,9 +97,42 @@ public class Field extends View {
     }
 
     protected Card[] card = new Card[24];
-    MonsterCard myplaysummons,enemyplaysummons; //場に出ているものそれ自体
-    int my_rank=0,my_HP,enemy_rank=0,enemy_HP;
-    String my_color,enemy_color;
+    MonsterCard myplaysummons, enemyplaysummons; //場に出ているものそれ自体
+    int my_rank = 0, my_HP, enemy_rank = 0, enemy_HP, my_x, my_y, my_z, enemy_x, enemy_y, enemy_z;
+    String my_color, enemy_color;
+    String myselectbutton, enemyselectbutton;
+    boolean mysummonsdead = false, enemysummonsdead = false;
+    Timer timer;
+    Handler handler = new Handler();
+
+    class Timeract extends TimerTask {
+        int a;
+        public Timeract(int i) {
+            a = i;
+        }
+        @Override
+        public void run() {
+            if(a==1) {
+                myattack();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+            }
+            if(a==2) {
+                enemyattack();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+            }
+        }
+    }
+
 
     public Field(Context context) {
         super(context);
@@ -109,10 +148,10 @@ public class Field extends View {
         enemysupports = new Rect(481, 156, 599, 328);
         enemydeck = new Rect(163, 248, 281, 420);
 
-        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 100, 100, 100, 0, "Red");
-        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 100, 100, 100, 0, "Blue");
-        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 100, 100, 100, 0, "Green");
-        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 100, 100, 100, 0, "Yellow");
+        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 300, 200, 100, 0, "Red");
+        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 300, 200, 100, 0, "Blue");
+        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 300, 200, 100, 0, "Green");
+        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 300, 200, 100, 0, "Yellow");
         card[4] = new MonsterCard(context, R.drawable.s0005, 100, 100, 100, 100, 1, "Red");
         card[5] = new MonsterCard(context, R.drawable.s0006, 100, 100, 100, 100, 1, "Blue");
         card[6] = new MonsterCard(context, R.drawable.s0007, 100, 100, 100, 100, 1, "Green");
@@ -147,40 +186,40 @@ public class Field extends View {
         Collections.shuffle(enemydecks);
         mymulligan();
         enemymulligan();
-        boolean myexchange=false,enemyexchange=false;
-        while(myexchange==false){
+        boolean myexchange = false, enemyexchange = false;
+        while (myexchange == false) {
             Card checkcard;
-            for(int i = 0; i<myhands.size(); i++){
+            for (int i = 0; i < myhands.size(); i++) {
                 checkcard = myhands.get(i);
                 Class cls = checkcard.getClass();
-                if(cls == MonsterCard.class){
+                if (cls == MonsterCard.class) {
                     MonsterCard m = (MonsterCard) checkcard;
-                    if(m.rank==0){
+                    if (m.rank == 0) {
                         myexchange = true;
                     }
                 }
             }
-            if(myexchange == false){
+            if (myexchange == false) {
                 mymulligan();
             }
         }
-        while(enemyexchange==false){
+        while (enemyexchange == false) {
             Card checkcard;
-            for(int i = 0; i<enemyhands.size(); i++){
+            for (int i = 0; i < enemyhands.size(); i++) {
                 checkcard = enemyhands.get(i);
                 Class cls = checkcard.getClass();
-                if(cls == MonsterCard.class){
+                if (cls == MonsterCard.class) {
                     MonsterCard m = (MonsterCard) checkcard;
-                    if(m.rank==0){
+                    if (m.rank == 0) {
                         enemyexchange = true;
                     }
                 }
             }
-            if(enemyexchange == false){
+            if (enemyexchange == false) {
                 enemymulligan();
             }
         }
-
+        timer = new Timer();
 
         // リソースからbitmapを作成
         width = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
@@ -193,14 +232,15 @@ public class Field extends View {
         state = Game_state.setfirst;
     }
 
-    void enemymulligan(){
+    void enemymulligan() {
         enemytrash.addAll(enemyhands);
         enemyhands.clear();
         for (int i = 0; i < 5; i++) {
             enemyhands.addElement(enemydecks.remove(0));
         }
     }
-    void mymulligan(){
+
+    void mymulligan() {
         mytrash.addAll(myhands);
         myhands.clear();
         for (int i = 0; i < 5; i++) {
@@ -215,35 +255,34 @@ public class Field extends View {
 
         c.drawBitmap(back, backrect, mydeck, p);
         c.drawBitmap(back, backrect, enemydeck, p);
-        p.setARGB(255,0,0,0);
+        p.setARGB(255, 0, 0, 0);
         p.setTextSize(50);
         p.setAntiAlias(true);
-        button.setARGB(255,0,0,0);
+        button.setARGB(255, 0, 0, 0);
         button.setTextSize(250);
-        c.drawText(String.valueOf(mydecks.size()),810,870,p);
-        c.drawText(String.valueOf(enemydecks.size()),173,298,p);
-        c.drawText("trash:" + String.valueOf(mytrash.size()),810,1100,p);
-        c.drawText("trash:" + String.valueOf(enemytrash.size()),173,208,p);
-        c.drawText("HP:" + String.valueOf(my_HP),173,730,p);
-        c.drawText("rank:" + String.valueOf(my_rank),173,810,p);
-        c.drawText("color:" + my_color,173,870,p);
-        c.drawText("HP:" + String.valueOf(enemy_HP),630,308,p);
-        c.drawText("rank:" + String.valueOf(enemy_rank),630,388,p);
-        c.drawText("color:" + enemy_color,630,448,p);
+        c.drawText(String.valueOf(mydecks.size()), 810, 870, p);
+        c.drawText(String.valueOf(enemydecks.size()), 173, 298, p);
+        c.drawText("trash:" + String.valueOf(mytrash.size()), 810, 1100, p);
+        c.drawText("trash:" + String.valueOf(enemytrash.size()), 173, 208, p);
+        c.drawText("HP:" + String.valueOf(my_HP), 173, 730, p);
+        c.drawText("rank:" + String.valueOf(my_rank), 173, 810, p);
+        c.drawText("color:" + my_color, 173, 870, p);
+        c.drawText("HP:" + String.valueOf(enemy_HP), 630, 308, p);
+        c.drawText("rank:" + String.valueOf(enemy_rank), 630, 388, p);
+        c.drawText("color:" + enemy_color, 630, 448, p);
 
-        if(state == Game_state.mydraw){
-            c.drawText("あなたのターンです。タップでドロー",100,595,p);
-        }
-        if(state == Game_state.mybattle){
-            c.drawText("[先行]戦闘です。↓のボタンをタップ！",100,595,p);
-            c.drawText(" x    y    z ",0,1600,button);
+        if (state == Game_state.setfirst) c.drawText("ランク0の最初の召喚獣を選んでください", 100, 595, p);
+        if (state == Game_state.mydraw) c.drawText("あなたのターンです。タップでドロー", 100, 595, p);
+        if (state == Game_state.mybattle) {
+            c.drawText("[先行]戦闘です。↓のボタンをタップ！", 100, 595, p);
+            c.drawText(" x    y    z ", 0, 1600, button);
         }
 
-        if(myplaysummons != null){
-            c.drawBitmap(myplaysummons.bitmap,myplaysummons.rect,mysummons,p);
+        if (myplaysummons != null) {
+            c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
         }
-        if(enemyplaysummons != null){
-            c.drawBitmap(enemyplaysummons.bitmap,enemyplaysummons.rect,enemysummons,p);
+        if (enemyplaysummons != null) {
+            c.drawBitmap(enemyplaysummons.bitmap, enemyplaysummons.rect, enemysummons, p);
         }
 
         Rect[] myhandsrect = new Rect[myhands.size()];
@@ -267,10 +306,15 @@ public class Field extends View {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             touchx = (int) ev.getX();
             touchy = (int) ev.getY();
-            if(state == Game_state.mydraw){
+            Log.d("test",String.valueOf(touchy));
+            if (state == Game_state.mybattle) {
+                selectbutton();
+                Field.this.invalidate();
+            }
+            if (state == Game_state.mydraw) {
                 mydraw();
             }
-            if(state == Game_state.setfirst){
+            if (state == Game_state.setfirst) {
                 //最初にランク0を出そうとするところ
                 firstsummons();
                 state = Game_state.mydraw;
@@ -280,8 +324,8 @@ public class Field extends View {
         return true;
     }
 
-    void firstsummons(){
-        Card check,putsummon;
+    void firstsummons() {
+        Card check, putsummon;
         for (int i = 0; i < myhands.size(); i++) {
             if (displaywidth / myhands.size() * i < touchx && touchx < displaywidth / myhands.size() * i + 118 && 1200 < touchy && touchy < 1392) {
                 check = myhands.get(i);
@@ -293,16 +337,19 @@ public class Field extends View {
                     if (m.rank == 0) {   /*0なら*/
                         Vector<Card> s = new Vector<Card>();
                         putsummon = myhands.remove(i);
-                        myplaysummons = (MonsterCard)putsummon;
+                        myplaysummons = (MonsterCard) putsummon;
                         my_HP = myplaysummons.HP;
+                        my_x = myplaysummons.x;
+                        my_y = myplaysummons.y;
+                        my_z = myplaysummons.z;
                         my_color = myplaysummons.summonscolor;
                         //相手のランク0を出すところ
-                        for(int k=0; k<enemyhands.size(); k++){
+                        for (int k = 0; k < enemyhands.size(); k++) {
                             check = enemyhands.get(k);
                             cls = check.getClass();
-                            if(cls == MonsterCard.class){
+                            if (cls == MonsterCard.class) {
                                 MonsterCard n = (MonsterCard) check;
-                                if (n.rank==0){
+                                if (n.rank == 0) {
                                     s.addElement(enemyhands.remove(k));
                                 }
                             }
@@ -311,9 +358,12 @@ public class Field extends View {
                         Random random = new Random();
                         int ran = random.nextInt(s.size());
                         putsummon = s.remove(ran);
-                        enemyplaysummons = (MonsterCard)putsummon;
+                        enemyplaysummons = (MonsterCard) putsummon;
                         enemyhands.addAll(s);
                         enemy_HP = enemyplaysummons.HP;
+                        enemy_x = enemyplaysummons.x;
+                        enemy_y = enemyplaysummons.y;
+                        enemy_z = enemyplaysummons.z;
                         enemy_color = enemyplaysummons.summonscolor;
                     }
                 }
@@ -321,9 +371,48 @@ public class Field extends View {
         }
     }
 
-    void mydraw(){
+    void mydraw() {
         myhands.addElement(mydecks.remove(0));
-        if(turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         state = Game_state.mybattle;
     }
+
+    void selectbutton() {
+        if (touchx < 220 && 1400 < touchy) myselectbutton = "x";
+        if (450 < touchx && touchx < 600 && 1400 < touchy) myselectbutton = "y";
+        if (930 < touchx && 1400 < touchy) myselectbutton = "z";
+        Random random = new Random();
+        int i = random.nextInt(3);
+        if (i == 0) enemyselectbutton = "x";
+        if (i == 1) enemyselectbutton = "y";
+        if (i == 2) enemyselectbutton = "z";
+        state = Game_state.waitbuttle;
+        wait(1, 1000);          // to myattack
+    }
+
+    void myattack() {
+        if (mysummonsdead == false) {
+            if (myselectbutton == "x") enemy_HP -= my_x;    enemyitasou == true;
+            if (myselectbutton == "y") enemy_HP -= my_y;    enemyitasou == true;
+            if (myselectbutton == "z") enemy_HP -= my_z;    enemyitasou == true;
+        }
+        if(enemy_HP < 0) enemysummonsdead = true;
+        wait(2,1000);           // to enemyattack
+    }
+    void enemyattack(){
+        if (enemysummonsdead == false) {
+            if (enemyselectbutton == "x") my_HP -= enemy_x; myitasou == true;
+            if (enemyselectbutton == "y") my_HP -= enemy_y; myitasou == true;
+            if (enemyselectbutton == "z") my_HP -= enemy_z; myitasou == true;
+        }
+        if(my_HP < 0) mysummonsdead = true;
+        //wait(1,1000);
+    }
+
+    void wait(int i, int t) {
+        int actselect = i;
+        TimerTask timeract0 = new Timeract(actselect);
+        timer.schedule(timeract0, t);
+    }
+
 }
