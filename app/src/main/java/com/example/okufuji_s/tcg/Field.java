@@ -23,6 +23,7 @@ import java.util.Vector;
  */
 public class Field extends View {
     Paint p = new Paint();
+    Paint button = new Paint();
     Bitmap back, width;
     Rect backrect;
     Rect mysummons, mysupport, mydeck;
@@ -212,13 +213,13 @@ public class Field extends View {
         super.onDraw(c);
         Card test;
 
-        //c.drawBitmap(card[1].bitmap,card[1].rect,mysupport,p);
-        //c.drawBitmap(card[2].bitmap,card[2].rect,mydeck,p);
         c.drawBitmap(back, backrect, mydeck, p);
         c.drawBitmap(back, backrect, enemydeck, p);
         p.setARGB(255,0,0,0);
         p.setTextSize(50);
         p.setAntiAlias(true);
+        button.setARGB(255,0,0,0);
+        button.setTextSize(250);
         c.drawText(String.valueOf(mydecks.size()),810,870,p);
         c.drawText(String.valueOf(enemydecks.size()),173,298,p);
         c.drawText("trash:" + String.valueOf(mytrash.size()),810,1100,p);
@@ -232,6 +233,10 @@ public class Field extends View {
 
         if(state == Game_state.mydraw){
             c.drawText("あなたのターンです。タップでドロー",100,595,p);
+        }
+        if(state == Game_state.mybattle){
+            c.drawText("[先行]戦闘です。↓のボタンをタップ！",100,595,p);
+            c.drawText(" x    y    z ",0,1600,button);
         }
 
         if(myplaysummons != null){
