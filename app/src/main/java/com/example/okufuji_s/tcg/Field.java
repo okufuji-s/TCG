@@ -38,13 +38,15 @@ public class Field extends View {
     Vector<Card> enemytrash = new Vector<Card>();
 
     int displaywidth;
-
     int touchx, touchy;  //触った場所の座標
+
+    int turn_count = 0;
 
     enum Game_state {
         start,
         setfirst,
-        waitenemysetfirst,
+        mydraw,
+        mybattle,
     }
     Game_state state = Game_state.start;
 
@@ -227,11 +229,10 @@ public class Field extends View {
         c.drawText("HP:" + String.valueOf(enemy_HP),630,308,p);
         c.drawText("rank:" + String.valueOf(enemy_rank),630,388,p);
         c.drawText("color:" + enemy_color,630,448,p);
-        /*
-        p.setARGB(255,100,100,255);
-        p.setTextSize(100);
-        c.drawText(String.valueOf(displaywidth),100,100,p);
-        */
+
+        if(state == Game_state.mydraw){
+            c.drawText("あなたのターンです。タップでドロー",100,595,p);
+        }
 
         if(myplaysummons != null){
             c.drawBitmap(myplaysummons.bitmap,myplaysummons.rect,mysummons,p);
@@ -261,9 +262,13 @@ public class Field extends View {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             touchx = (int) ev.getX();
             touchy = (int) ev.getY();
+            if(state == Game_state.mydraw){
+                mydraw();
+            }
             if(state == Game_state.setfirst){
                 //最初にランク0を出そうとするところ
                 firstsummons();
+                state = Game_state.mydraw;
             }
             Field.this.invalidate();
         }
@@ -309,5 +314,11 @@ public class Field extends View {
                 }
             }
         }
+    }
+
+    void mydraw(){
+        myhands.addElement(mydecks.remove(0));
+        if(turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        state = Game_state.mybattle;
     }
 }
