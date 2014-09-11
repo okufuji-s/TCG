@@ -11,21 +11,26 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.os.Handler;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import static android.view.GestureDetector.OnGestureListener;
+
 /**
  * Created by okufuji-s on 2014/09/08.
  */
-public class Field extends View {
+public class Field extends View implements OnGestureListener
+{
     Paint p = new Paint();
     Paint button = new Paint();
     Bitmap back, width, itai;
@@ -113,7 +118,6 @@ public class Field extends View {
     boolean mysummonsdead = false, enemysummonsdead = false;
     Timer timer;
     Handler handler = new Handler();
-
     class Timeract extends TimerTask {
         int a;
 
@@ -143,10 +147,13 @@ public class Field extends View {
             }
         }
     }
+    GestureDetector gestureDetector;
 
 
     public Field(Context context) {
         super(context);
+
+        this.gestureDetector = new GestureDetector(Field.this.getContext(), this);
 
         Resources res = context.getResources();
         back = BitmapFactory.decodeResource(res, R.drawable.back);
@@ -241,7 +248,6 @@ public class Field extends View {
         // Displayインスタンス生成
         Display dp = wm.getDefaultDisplay();
         displaywidth = dp.getWidth();
-
         state = Game_state.setfirst;
     }
 
@@ -328,6 +334,7 @@ public class Field extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             touchx = (int) ev.getX();
             touchy = (int) ev.getY();
@@ -358,6 +365,35 @@ public class Field extends View {
         }
         return true;
     }
+
+
+
+
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+        Log.d("log","フリックしてます");
+        return false;
+    }
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
+        Log.d("log","Scrollしてますよ");
+        return false;
+    }
+    public void onShowPress(MotionEvent e){
+        Log.d("log","Showpressしてますよ");
+    }
+    public boolean onSingleTapUp(MotionEvent e){
+        Log.d("log","シングルタップしてますよ");
+        return false;
+    }
+    public boolean onDown(MotionEvent e){
+        Log.d("log","押してますよ");
+        return false;
+    }
+
+
+    public void onLongPress(MotionEvent e) {
+        Log.d("log","長押し成功してますよ");
+    }
+
 
     void firstsummons() {
         Card check, putsummon;
@@ -458,7 +494,7 @@ public class Field extends View {
         if (enemy_HP <= 0) enemysummonsdead = true;
         if (enemy_HP <= 0 && enemy_rank >= 3) state = Game_state.win;
         if (state != Game_state.win && attackstate == Game_state.myattack) wait(2, 1000);
-        if (state != Game_state.enemywin && attackstate == Game_state.enemyattack) state = Game_state.mydraw;
+        if (state != Game_state.win && attackstate == Game_state.enemyattack) state = Game_state.mydraw;
 
     }
 
