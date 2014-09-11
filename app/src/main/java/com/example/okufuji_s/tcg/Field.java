@@ -395,8 +395,8 @@ public class Field extends View {
         attackstate = Game_state.myattack;
         myitasou = false;
         enemyitasou = false;
-        myhands.addElement(mydecks.remove(0));
-        if (turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if(mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
+        if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         state = Game_state.battle;
     }
 
@@ -404,15 +404,16 @@ public class Field extends View {
         attackstate = Game_state.enemyattack;
         myitasou = false;
         enemyitasou = false;
-        enemyhands.addElement(enemydecks.remove(0));
-        if (turn_count != 0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if(enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0));
+        if (turn_count != 0 && enemydecks.size()!=0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
+
         state = Game_state.battle;
     }
 
     void selectbutton() {
         if (touchx < 220 && 1400 < touchy) myselectbutton = "x";
         if (450 < touchx && touchx < 600 && 1400 < touchy) myselectbutton = "y";
-        if (930 < touchx && 1400 < touchy) myselectbutton = "z";
+        if (800 < touchx && 1400 < touchy) myselectbutton = "z";
         Random random = new Random();
         int i = random.nextInt(3);
         if (i == 0) enemyselectbutton = "x";
@@ -424,20 +425,20 @@ public class Field extends View {
     void myattack() {
         myitasou = false;
         if (mysummonsdead == false) {
-            if (myselectbutton == "x") {
+            if (myselectbutton.equals("x")) {
                 enemy_HP -= my_x;
                 enemyitasou = true;
             }
-            if (myselectbutton == "y") {
+            if (myselectbutton.equals("y")) {
                 enemy_HP -= my_y;
                 enemyitasou = true;
             }
-            if (myselectbutton == "z") {
+            if (myselectbutton.equals("z")) {
                 enemy_HP -= my_z;
                 enemyitasou = true;
             }
         }
-        if(enemy_HP < 0) enemysummonsdead = true;
+        if(enemy_HP <= 0) enemysummonsdead = true;
         if(attackstate == Game_state.myattack) wait(2,1000);
         if(attackstate == Game_state.enemyattack) state = Game_state.mydraw;
 
@@ -445,20 +446,20 @@ public class Field extends View {
     void enemyattack(){
         enemyitasou = false;
         if (enemysummonsdead == false) {
-            if (enemyselectbutton == "x") {
+            if (enemyselectbutton.equals("x")) {
                 my_HP -= my_x;
                 myitasou = true;
             }
-            if (enemyselectbutton == "y") {
+            if (enemyselectbutton.equals("y")) {
                 my_HP -= my_y;
                 myitasou = true;
             }
-            if (enemyselectbutton == "z") {
+            if (enemyselectbutton.equals("z")) {
                 my_HP -= my_z;
                 myitasou = true;
             }
         }
-        if(my_HP < 0) mysummonsdead = true;
+        if(my_HP <= 0) mysummonsdead = true;
         if(attackstate == Game_state.enemyattack) wait(1,1000);
         if(attackstate == Game_state.myattack) state = Game_state.enemydraw;
     }
