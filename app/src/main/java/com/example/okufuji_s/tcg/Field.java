@@ -337,7 +337,6 @@ public class Field extends View {
             if (state == Game_state.setfirst) {
                 //最初にランク0を出そうとするところ
                 firstsummons();
-                state = Game_state.mydraw;
             }
             Field.this.invalidate();
         }
@@ -385,6 +384,7 @@ public class Field extends View {
                         enemy_y = enemyplaysummons.y;
                         enemy_z = enemyplaysummons.z;
                         enemy_color = enemyplaysummons.summonscolor;
+                        state = Game_state.mydraw;
                     }
                 }
             }
