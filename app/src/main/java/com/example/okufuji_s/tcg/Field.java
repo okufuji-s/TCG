@@ -28,12 +28,12 @@ import java.util.Vector;
 public class Field extends View {
     Paint p = new Paint();
     Paint button = new Paint();
-    Bitmap back, width,itai;
-    Rect backrect,itairect;
+    Bitmap back, width, itai;
+    Rect backrect, itairect;
     Rect mysummons, mysupport, mydeck;
     Rect enemysummons, enemysupports, enemydeck;
     //Vector<Card> mydecks,enemydecks;
-    boolean myitasou=false,enemyitasou=false;
+    boolean myitasou = false, enemyitasou = false;
 
 
     Vector<Card> mydecks = new Vector<Card>();
@@ -57,6 +57,8 @@ public class Field extends View {
         enemydraw,
         myattack,
         enemyattack,
+        mynewsummons,
+        enemynewsummons,
     }
 
     Game_state state = Game_state.mydraw;
@@ -112,12 +114,14 @@ public class Field extends View {
 
     class Timeract extends TimerTask {
         int a;
+
         public Timeract(int i) {
             a = i;
         }
+
         @Override
         public void run() {
-            if(a==1) {
+            if (a == 1) {
                 myattack();
                 handler.post(new Runnable() {
                     @Override
@@ -126,7 +130,7 @@ public class Field extends View {
                     }
                 });
             }
-            if(a==2) {
+            if (a == 2) {
                 enemyattack();
                 handler.post(new Runnable() {
                     @Override
@@ -146,7 +150,7 @@ public class Field extends View {
         back = BitmapFactory.decodeResource(res, R.drawable.back);
         backrect = new Rect(0, 0, back.getWidth(), back.getHeight());
         itai = BitmapFactory.decodeResource(res, R.drawable.itai);
-        itairect = new Rect(0,0,itai.getWidth(),itai.getHeight());
+        itairect = new Rect(0, 0, itai.getWidth(), itai.getHeight());
 
         mysummons = new Rect(481, 720, 599, 892);
         mysupport = new Rect(481, 912, 599, 1084);
@@ -155,22 +159,22 @@ public class Field extends View {
         enemysupports = new Rect(481, 156, 599, 328);
         enemydeck = new Rect(163, 248, 281, 420);
 
-        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 300, 200, 100, 0, "Red");
-        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 300, 200, 100, 0, "Blue");
-        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 300, 200, 100, 0, "Green");
-        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 300, 200, 100, 0, "Yellow");
-        card[4] = new MonsterCard(context, R.drawable.s0005, 100, 100, 100, 100, 1, "Red");
-        card[5] = new MonsterCard(context, R.drawable.s0006, 100, 100, 100, 100, 1, "Blue");
-        card[6] = new MonsterCard(context, R.drawable.s0007, 100, 100, 100, 100, 1, "Green");
-        card[7] = new MonsterCard(context, R.drawable.s0008, 100, 100, 100, 100, 1, "Yellow");
-        card[8] = new MonsterCard(context, R.drawable.s0009, 100, 100, 100, 100, 2, "Red");
-        card[9] = new MonsterCard(context, R.drawable.s0010, 100, 100, 100, 100, 2, "Blue");
-        card[10] = new MonsterCard(context, R.drawable.s0011, 100, 100, 100, 100, 2, "Green");
-        card[11] = new MonsterCard(context, R.drawable.s0012, 100, 100, 100, 100, 2, "Yellow");
-        card[12] = new MonsterCard(context, R.drawable.s0013, 100, 100, 100, 100, 3, "Red");
-        card[13] = new MonsterCard(context, R.drawable.s0014, 100, 100, 100, 100, 3, "Blue");
-        card[14] = new MonsterCard(context, R.drawable.s0015, 100, 100, 100, 100, 3, "Green");
-        card[15] = new MonsterCard(context, R.drawable.s0016, 100, 100, 100, 100, 3, "Yellow");
+        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 320, 240, 120, 0, "Red");
+        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 240, 180, 160, 0, "Blue");
+        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 300, 250, 150, 0, "Green");
+        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 270, 200, 170, 0, "Yellow");
+        card[4] = new MonsterCard(context, R.drawable.s0005, 670, 560, 410, 260, 1, "Red");
+        card[5] = new MonsterCard(context, R.drawable.s0006, 870, 480, 320, 230, 1, "Blue");
+        card[6] = new MonsterCard(context, R.drawable.s0007, 810, 420, 350, 330, 1, "Green");
+        card[7] = new MonsterCard(context, R.drawable.s0008, 780, 450, 360, 270, 1, "Yellow");
+        card[8] = new MonsterCard(context, R.drawable.s0009, 950, 700, 480, 370, 2, "Red");
+        card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue");
+        card[10] = new MonsterCard(context, R.drawable.s0011, 990, 630, 340, 190, 2, "Green");
+        card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow");
+        card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red");
+        card[13] = new MonsterCard(context, R.drawable.s0014, 1960, 590, 420, 370, 3, "Blue");
+        card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green");
+        card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow");
         card[16] = new SupportCard(context, R.drawable.s1001, 0);
         card[17] = new SupportCard(context, R.drawable.s1002, 0);
         card[18] = new SupportCard(context, R.drawable.s1003, 0);
@@ -280,12 +284,14 @@ public class Field extends View {
         c.drawText("color:" + enemy_color, 630, 448, p);
 
         if (state == Game_state.setfirst) c.drawText("ランク0の最初の召喚獣を選んでください", 100, 595, p);
+        if (state == Game_state.mynewsummons) c.drawText("[瀕死しています]新しい召喚獣をプレイしてください", 0, 595, p);
+        if (state == Game_state.enemynewsummons) c.drawText("相手は新しい召喚獣をプレイします。", 150, 595, p);
         if (state == Game_state.mydraw) c.drawText("あなたのターンです。タップでドロー", 100, 595, p);
         if (state == Game_state.battle && attackstate == Game_state.myattack) {
             c.drawText("[先行]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
         }
-        if(state == Game_state.enemydraw) c.drawText("あいてのターンをタップで始めます。",100,595,p);
+        if (state == Game_state.enemydraw) c.drawText("あいてのターンをタップで始めます。", 100, 595, p);
         if (state == Game_state.battle && attackstate == Game_state.enemyattack) {
             c.drawText("[後攻]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
@@ -310,8 +316,8 @@ public class Field extends View {
             test = enemyhands.get(i);
             c.drawBitmap(back, backrect, enemyhandsrect[i], p);
         }
-        if(myitasou == true) c.drawBitmap(itai,itairect,mysummons,p);
-        if(enemyitasou == true) c.drawBitmap(itai,itairect,enemysummons,p);
+        if (myitasou == true) c.drawBitmap(itai, itairect, mysummons, p);
+        if (enemyitasou == true) c.drawBitmap(itai, itairect, enemysummons, p);
 
 
     }
@@ -321,14 +327,14 @@ public class Field extends View {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             touchx = (int) ev.getX();
             touchy = (int) ev.getY();
-            Log.d("test",String.valueOf(touchy));
+            Log.d("test", String.valueOf(touchy));
             if (state == Game_state.battle) {
                 selectbutton();
-                if(attackstate == Game_state.myattack) wait(1,1000);
-                if(attackstate == Game_state.enemyattack) wait(2,1000);
+                if (attackstate == Game_state.myattack) wait(1, 1000);
+                if (attackstate == Game_state.enemyattack) wait(2, 1000);
                 turn_count++;
             }
-            if(state == Game_state.enemydraw){
+            if (state == Game_state.enemydraw) {
                 enemydraw();
             }
             if (state == Game_state.mydraw) {
@@ -337,6 +343,12 @@ public class Field extends View {
             if (state == Game_state.setfirst) {
                 //最初にランク0を出そうとするところ
                 firstsummons();
+            }
+            if (state == Game_state.mynewsummons) {
+                mynewsummmons();
+            }
+            if (state == Game_state.enemynewsummons) {
+                enemynewsummons();
             }
             Field.this.invalidate();
         }
@@ -395,19 +407,22 @@ public class Field extends View {
         attackstate = Game_state.myattack;
         myitasou = false;
         enemyitasou = false;
-        if(mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
-        if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
-        state = Game_state.battle;
+        if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
+        if (turn_count != 0 && mydecks.size() != 0)
+            myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (mysummonsdead == true) state = Game_state.mynewsummons;
+        if (mysummonsdead == false) state = Game_state.battle;
     }
 
-    void enemydraw(){
+    void enemydraw() {
         attackstate = Game_state.enemyattack;
         myitasou = false;
         enemyitasou = false;
-        if(enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0));
-        if (turn_count != 0 && enemydecks.size()!=0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
-
-        state = Game_state.battle;
+        if (enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0));
+        if (turn_count != 0 && enemydecks.size() != 0)
+            enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (enemysummonsdead == true) state = Game_state.enemynewsummons;
+        if (enemysummonsdead == false) state = Game_state.battle;
     }
 
     void selectbutton() {
@@ -438,12 +453,13 @@ public class Field extends View {
                 enemyitasou = true;
             }
         }
-        if(enemy_HP <= 0) enemysummonsdead = true;
-        if(attackstate == Game_state.myattack) wait(2,1000);
-        if(attackstate == Game_state.enemyattack) state = Game_state.mydraw;
+        if (enemy_HP <= 0) enemysummonsdead = true;
+        if (attackstate == Game_state.myattack) wait(2, 1000);
+        if (attackstate == Game_state.enemyattack) state = Game_state.mydraw;
 
     }
-    void enemyattack(){
+
+    void enemyattack() {
         enemyitasou = false;
         if (enemysummonsdead == false) {
             if (enemyselectbutton.equals("x")) {
@@ -459,9 +475,64 @@ public class Field extends View {
                 myitasou = true;
             }
         }
-        if(my_HP <= 0) mysummonsdead = true;
-        if(attackstate == Game_state.enemyattack) wait(1,1000);
-        if(attackstate == Game_state.myattack) state = Game_state.enemydraw;
+        if (my_HP <= 0) mysummonsdead = true;
+        if (attackstate == Game_state.enemyattack) wait(1, 1000);
+        if (attackstate == Game_state.myattack) state = Game_state.enemydraw;
+    }
+
+    void mynewsummmons() {
+        Card check, putsummon;
+        for (int i = 0; i < myhands.size(); i++) {
+            if (displaywidth / myhands.size() * i < touchx && touchx < displaywidth / myhands.size() * i + 118 && 1200 < touchy && touchy < 1392) {
+                check = myhands.get(i);
+                Class cls = check.getClass();
+                if (cls == MonsterCard.class) {
+                    MonsterCard m;
+                    m = (MonsterCard) check;
+                    if (m.rank <= my_rank + 1) {   /*0なら*/
+                        Vector<Card> s = new Vector<Card>();
+                        putsummon = myhands.remove(i);
+                        myplaysummons = (MonsterCard) putsummon;
+                        my_HP = myplaysummons.HP;
+                        my_x = myplaysummons.x;
+                        my_y = myplaysummons.y;
+                        my_z = myplaysummons.z;
+                        my_color = myplaysummons.summonscolor;
+                        state = Game_state.battle;
+                    }
+                }
+            }
+        }
+    }
+
+    void enemynewsummons() {
+        Card check, putsummon;
+        Vector<Card> s = new Vector<Card>();
+        Class cls;
+        for (int i = enemy_rank; i >= 0; i--) {
+            for (int k = 0; k < enemyhands.size(); k++) {
+                check = enemyhands.get(k);
+                cls = check.getClass();
+                if (cls == MonsterCard.class) {
+                    MonsterCard n = (MonsterCard) check;
+                    if (n.rank == 0) {
+                         s.addElement(enemyhands.remove(k));
+                    }
+                }
+
+            }
+            Random random = new Random();
+            int ran = random.nextInt(s.size());
+            putsummon = s.remove(ran);
+            enemyplaysummons = (MonsterCard) putsummon;
+            enemyhands.addAll(s);
+            enemy_HP = enemyplaysummons.HP;
+            enemy_x = enemyplaysummons.x;
+            enemy_y = enemyplaysummons.y;
+            enemy_z = enemyplaysummons.z;
+            enemy_color = enemyplaysummons.summonscolor;
+            state = Game_state.battle;
+        }
     }
 
     void wait(int i, int t) {
