@@ -39,6 +39,7 @@ public class Field extends View implements OnGestureListener {
     //Vector<Card> mydecks,enemydecks;
     boolean myitasou = false, enemyitasou = false;
     boolean longtap = false;
+    boolean mybutton = false,enemybutton = false;
 
     Vector<Card> mydecks = new Vector<Card>();
     Vector<Card> enemydecks = new Vector<Card>();
@@ -65,6 +66,8 @@ public class Field extends View implements OnGestureListener {
         enemyattack,
         mynewsummons,       //自分のしんだら
         enemynewsummons,    //相手のしんだら
+        myef,
+        enemyef,
         win,
         enemywin,
         setsupport,
@@ -96,8 +99,9 @@ public class Field extends View implements OnGestureListener {
         int z;
         int rank;
         String summonscolor;   //red=0,blue=1,green=2,yellow=3
+        int ef;
 
-        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3, int i4, String s) {
+        public MonsterCard(Context c, int bmp, int i, int i1, int i2, int i3, int i4, String s ,int ze) {
             super(c, bmp);
             HP = i;
             x = i1;
@@ -105,6 +109,8 @@ public class Field extends View implements OnGestureListener {
             z = i3;
             rank = i4;
             summonscolor = s;
+            ef = ze;
+
         }
     }
 
@@ -205,6 +211,38 @@ public class Field extends View implements OnGestureListener {
                     }
                 });
             }
+            if (a == 7) {
+                effectstate = Game_state.myef;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+                myef();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+            }
+            if (a == 8) {
+                effectstate = Game_state.enemyef;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+                enemyef();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
+            }
         }
 
     }
@@ -229,22 +267,22 @@ public class Field extends View implements OnGestureListener {
         enemydeck = new Rect(163, 248, 281, 420);
         kakudai = new Rect(0, 110, 236, 454);
 
-        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 320, 240, 120, 0, "Red");
-        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 240, 180, 160, 0, "Blue");
-        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 300, 250, 150, 0, "Green");
-        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 270, 200, 170, 0, "Yellow");
-        card[4] = new MonsterCard(context, R.drawable.s0005, 670, 560, 410, 260, 1, "Red");
-        card[5] = new MonsterCard(context, R.drawable.s0006, 870, 480, 320, 230, 1, "Blue");
-        card[6] = new MonsterCard(context, R.drawable.s0007, 810, 420, 350, 330, 1, "Green");
-        card[7] = new MonsterCard(context, R.drawable.s0008, 780, 450, 360, 270, 1, "Yellow");
-        card[8] = new MonsterCard(context, R.drawable.s0009, 950, 700, 480, 370, 2, "Red");
-        card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue");
-        card[10] = new MonsterCard(context, R.drawable.s0011, 990, 630, 340, 190, 2, "Green");
-        card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow");
-        card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red");
-        card[13] = new MonsterCard(context, R.drawable.s0014, 1960, 590, 420, 370, 3, "Blue");
-        card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green");
-        card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow");
+        card[0] = new MonsterCard(context, R.drawable.s0001, 480, 320, 240, 120, 0, "Red", 0);
+        card[1] = new MonsterCard(context, R.drawable.s0002, 650, 240, 180, 160, 0, "Blue",0);
+        card[2] = new MonsterCard(context, R.drawable.s0003, 500, 300, 250, 150, 0, "Green",0);
+        card[3] = new MonsterCard(context, R.drawable.s0004, 560, 270, 200, 170, 0, "Yellow",2);
+        card[4] = new MonsterCard(context, R.drawable.s0005, 670, 560, 410, 260, 1, "Red",3);
+        card[5] = new MonsterCard(context, R.drawable.s0006, 870, 480, 320, 230, 1, "Blue",4);
+        card[6] = new MonsterCard(context, R.drawable.s0007, 810, 420, 350, 330, 1, "Green",5);
+        card[7] = new MonsterCard(context, R.drawable.s0008, 780, 450, 360, 270, 1, "Yellow",6); //3 = 対黄　4 = 対赤　5 = 対青　6 = 対緑
+        card[8] = new MonsterCard(context, R.drawable.s0009, 950, 700, 480, 370, 2, "Red",0);
+        card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue",0);
+        card[10] = new MonsterCard(context, R.drawable.s0011, 990, 630, 340, 190, 2, "Green",0);
+        card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow",0);
+        card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red",0);
+        card[13] = new MonsterCard(context, R.drawable.s0014, 1960, 590, 420, 370, 3, "Blue",0);
+        card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green",0);
+        card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow",0);
         card[16] = new SupportCard(context, R.drawable.s1001, 1);
         card[17] = new SupportCard(context, R.drawable.s1002, 2);
         card[18] = new SupportCard(context, R.drawable.s1003, 3);
@@ -418,6 +456,14 @@ public class Field extends View implements OnGestureListener {
             c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
         if (enemyplaysummons != null)
             c.drawBitmap(enemyplaysummons.bitmap, enemyplaysummons.rect, enemysummons, p);
+        if(mybutton == true){
+            c.drawText(myselectbutton,475,890,button);
+            mybutton = false;
+        }
+        if(enemybutton == true){
+            c.drawText(enemyselectbutton,475,520,button);
+            enemybutton = false;
+        }
 
         Rect[] myhandsrect = new Rect[myhands.size()];
         for (int i = 0; i < myhands.size(); i++) {
@@ -606,8 +652,8 @@ public class Field extends View implements OnGestureListener {
         Random random = new Random();
         int i = random.nextInt(3);
         if (i == 0) enemyselectbutton = "x";
-        if (i == 1) enemyselectbutton = "y";
-        if (i == 2) enemyselectbutton = "z";
+        if (i == 1) enemyselectbutton = "x";
+        if (i == 2) enemyselectbutton = "x";
         state = Game_state.supporteffect;
     }
 
@@ -641,15 +687,15 @@ public class Field extends View implements OnGestureListener {
         enemyitasou = false;
         if (enemysummonsdead == false) {
             if (enemyselectbutton.equals("x")) {
-                my_HP -= my_x;
+                my_HP -= enemy_x;
                 myitasou = true;
             }
             if (enemyselectbutton.equals("y")) {
-                my_HP -= my_y;
+                my_HP -= enemy_y;
                 myitasou = true;
             }
             if (enemyselectbutton.equals("z")) {
-                my_HP -= my_z;
+                my_HP -= enemy_z;
                 myitasou = true;
             }
         }
@@ -676,14 +722,7 @@ public class Field extends View implements OnGestureListener {
                         Vector<Card> s = new Vector<Card>();
                         putsummon = myhands.remove(i);
                         myplaysummons = (MonsterCard) putsummon;
-                        my_HP = myplaysummons.HP;
-                        my_x = myplaysummons.x;
-                        my_y = myplaysummons.y;
-                        my_z = myplaysummons.z;
-                        my_color = myplaysummons.summonscolor;
                         mysummonsdead = false;
-                        my_rank += 1;
-                        state = Game_state.setsupport;
                     }
                 }
             }
@@ -693,6 +732,13 @@ public class Field extends View implements OnGestureListener {
             int ran = random.nextInt(myhands.size());
             mytrash.add(myhands.remove(ran));
         }
+        my_rank+=1;
+        my_HP = myplaysummons.HP;
+        my_x = myplaysummons.x;
+        my_y = myplaysummons.y;
+        my_z = myplaysummons.z;
+        my_color = myplaysummons.summonscolor;
+        state = Game_state.setsupport;
     }
 
     void enemynewsummons() {
@@ -747,10 +793,10 @@ public class Field extends View implements OnGestureListener {
                     if (attackstate == Game_state.enemyattack) wait(4, 10);
                 }
             }
-            if (touchy > 1400) {
-                if (attackstate == Game_state.myattack) state = Game_state.battle;
-                if (attackstate == Game_state.enemyattack) wait(4, 10);
-            }
+        }
+        if (touchy > 1400) {
+            if (attackstate == Game_state.myattack) state = Game_state.battle;
+            if (attackstate == Game_state.enemyattack) wait(4, 10);
         }
     }
 
@@ -768,15 +814,17 @@ public class Field extends View implements OnGestureListener {
             }
         }
         if (sup.size() != 0) {
+            Log.d("log","sup size" + String.valueOf(sup.size()));
             Random random = new Random();
             int ran = random.nextInt(sup.size());
             putsupport = sup.elementAt(ran);
             trm2.add(sup.remove(ran));
             enemyplaysupport = (SupportCard) putsupport;
             enemyhands.addAll(sup);
+            sup.clear();
             if (attackstate == Game_state.enemyattack) state = Game_state.battle;
             if (attackstate == Game_state.myattack) wait(3, 10);
-        } else if (sup.size() == 0) {
+        } if (sup.size() == 0) {
             if (attackstate == Game_state.enemyattack) state = Game_state.battle;
             if (attackstate == Game_state.myattack) wait(3, 10);
         }
@@ -785,13 +833,64 @@ public class Field extends View implements OnGestureListener {
     void mysupporteffect() {
         myeffect();
         if (attackstate == Game_state.enemyattack) wait(6, 1000);
-        if (attackstate == Game_state.myattack) wait(1, 1000);
+        if (attackstate == Game_state.myattack) wait(8, 1000);
     }
-
     void enemysupporteffect() {
         enemyeffect();
         if (attackstate == Game_state.myattack) wait(5, 1000);
+        if (attackstate == Game_state.enemyattack) wait(7, 1000);
+    }
+    void myef(){
+        myeffectsummons();
+        if (attackstate == Game_state.myattack) wait(1, 1000);
+        if (attackstate == Game_state.enemyattack) wait(8, 1000);
+    }
+    void enemyef(){
+        enemyeffectsummons();
+        if (attackstate == Game_state.myattack) wait(7, 1000);
         if (attackstate == Game_state.enemyattack) wait(2, 1000);
+    }
+
+
+    void myeffectsummons(){
+        if (mysummonsdead == false && myselectbutton.equals("z")) {
+            switch (myplaysummons.ef) {
+                case 0:
+                    enemy_x = 0;
+                    break;
+                case 1: enemy_y = 0; break;
+                case 2: enemy_z = 0; break;
+                case 3: if(enemy_color.equals("Yellow")) my_z *= 3;
+                    break;
+                case 4: if(enemy_color.equals("Red")) my_z *= 3;
+                    break;
+                case 5: if(enemy_color.equals("Blue")) my_z *= 3;
+                    break;
+                case 6: if(enemy_color.equals("Green")) my_z *= 3;
+                    break;
+            }
+        }
+        mybutton = true;
+    }
+    void enemyeffectsummons(){
+        if (enemysummonsdead == false && enemyselectbutton.equals("z")) {
+            switch (enemyplaysummons.ef) {
+                case 0:
+                    my_x = 0;
+                    break;
+                case 1: my_y = 0; break;
+                case 2: my_z = 0; break;
+                case 3: if(my_color.equals("Yellow")) enemy_z *= 3;
+                    break;
+                case 4: if(my_color.equals("Red")) enemy_z *= 3;
+                    break;
+                case 5: if(my_color.equals("Blue")) enemy_z *= 3;
+                    break;
+                case 6: if(my_color.equals("Green")) enemy_z *= 3;
+                    break;
+            }
+        }
+        enemybutton = true;
     }
 
     void myeffect() {
