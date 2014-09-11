@@ -47,19 +47,20 @@ public class Field extends View {
     int touchx, touchy;  //触った場所の座標
 
     int turn_count = 0;
-    int attackcount = 0;
 
     enum Game_state {
         start,
         setfirst,
         mydraw,
-        mybattle,
+        battle,
         waitbuttle,
         enemydraw,
-        enemybuttle,
+        myattack,
+        enemyattack,
     }
 
     Game_state state = Game_state.mydraw;
+    Game_state attackstate = Game_state.myattack;
 
     class Card {
         Bitmap bitmap;
@@ -280,11 +281,15 @@ public class Field extends View {
 
         if (state == Game_state.setfirst) c.drawText("ランク0の最初の召喚獣を選んでください", 100, 595, p);
         if (state == Game_state.mydraw) c.drawText("あなたのターンです。タップでドロー", 100, 595, p);
-        if (state == Game_state.mybattle) {
+        if (state == Game_state.battle && attackstate == Game_state.myattack) {
             c.drawText("[先行]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
         }
         if(state == Game_state.enemydraw) c.drawText("あいてのターンをタップで始めます。",100,595,p);
+        if (state == Game_state.battle && attackstate == Game_state.enemyattack) {
+            c.drawText("[後攻]戦闘です。↓のボタンをタップ！", 100, 595, p);
+            c.drawText(" x    y    z ", 0, 1600, button);
+        }
 
         if (myplaysummons != null) {
             c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
@@ -317,11 +322,14 @@ public class Field extends View {
             touchx = (int) ev.getX();
             touchy = (int) ev.getY();
             Log.d("test",String.valueOf(touchy));
-            if (state == Game_state.mybattle) {
+            if (state == Game_state.battle) {
                 selectbutton();
-                wait(1,1000);
+                if(attackstate == Game_state.myattack) wait(1,1000);
+                if(attackstate == Game_state.enemyattack) wait(2,1000);
                 turn_count++;
-                if(attackcount == 2) state = Game_state.enemydraw;
+            }
+            if(state == Game_state.enemydraw){
+                enemydraw();
             }
             if (state == Game_state.mydraw) {
                 mydraw();
@@ -384,21 +392,21 @@ public class Field extends View {
     }
 
     void mydraw() {
-        attackcount = 0;
+        attackstate = Game_state.myattack;
         myitasou = false;
         enemyitasou = false;
         myhands.addElement(mydecks.remove(0));
         if (turn_count != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
-        state = Game_state.mybattle;
+        state = Game_state.battle;
     }
 
     void enemydraw(){
-        attackcount = 0;
+        attackstate = Game_state.enemyattack;
         myitasou = false;
         enemyitasou = false;
         enemyhands.addElement(enemydecks.remove(0));
         if (turn_count != 0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
-        state = Game_state.enemybuttle;
+        state = Game_state.battle;
     }
 
     void selectbutton() {
@@ -430,8 +438,9 @@ public class Field extends View {
             }
         }
         if(enemy_HP < 0) enemysummonsdead = true;
-        attackcount++;
-        if(attackcount <=1) wait(2,1000);         // to enemyattack
+        if(attackstate == Game_state.myattack) wait(2,1000);
+        if(attackstate == Game_state.enemyattack) state = Game_state.mydraw;
+
     }
     void enemyattack(){
         enemyitasou = false;
@@ -450,8 +459,8 @@ public class Field extends View {
             }
         }
         if(my_HP < 0) mysummonsdead = true;
-        attackcount++;
-        if(attackcount <= 1) wait(1,1000);         // to myattack
+        if(attackstate == Game_state.enemyattack) wait(1,1000);
+        if(attackstate == Game_state.myattack) state = Game_state.enemydraw;
     }
 
     void wait(int i, int t) {
@@ -459,5 +468,4 @@ public class Field extends View {
         TimerTask timeract0 = new Timeract(actselect);
         timer.schedule(timeract0, t);
     }
-
 }
