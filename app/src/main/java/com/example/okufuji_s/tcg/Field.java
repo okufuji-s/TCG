@@ -59,6 +59,8 @@ public class Field extends View {
         enemyattack,
         mynewsummons,
         enemynewsummons,
+        win,
+        enemywin,
     }
 
     Game_state state = Game_state.mydraw;
@@ -184,8 +186,8 @@ public class Field extends View {
         card[22] = new SupportCard(context, R.drawable.s1007, 0);
         card[23] = new SupportCard(context, R.drawable.s1008, 0);
 
-        int[] decka = {0, 1, 14, 15, 18, 19, 12, 13, 16, 20};
-        int[] deckb = {2, 3, 10, 10, 10, 11, 11, 10, 11, 10};
+        int[] decka = {0, 4, 6, 7, 8, 10, 11, 12, 12, 15};
+        int[] deckb = {2, 5, 6, 7, 9, 10, 11, 13, 5, 5};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -284,7 +286,7 @@ public class Field extends View {
         c.drawText("color:" + enemy_color, 630, 448, p);
 
         if (state == Game_state.setfirst) c.drawText("ランク0の最初の召喚獣を選んでください", 100, 595, p);
-        if (state == Game_state.mynewsummons) c.drawText("[瀕死しています]新しい召喚獣をプレイしてください", 0, 595, p);
+        if (state == Game_state.mynewsummons) c.drawText("[瀕死しています]召喚獣をプレイしてください", 0, 595, p);
         if (state == Game_state.enemynewsummons) c.drawText("相手は新しい召喚獣をプレイします。", 150, 595, p);
         if (state == Game_state.mydraw) c.drawText("あなたのターンです。タップでドロー", 100, 595, p);
         if (state == Game_state.battle && attackstate == Game_state.myattack) {
@@ -296,6 +298,8 @@ public class Field extends View {
             c.drawText("[後攻]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
         }
+        if (state == Game_state.win) c.drawText("[あなたの勝利]おめでとうございます", 100, 595, p);
+        if (state == Game_state.enemywin) c.drawText("[相手の勝利]残念でした・・・", 200, 595, p);
 
         if (myplaysummons != null) {
             c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
@@ -408,8 +412,7 @@ public class Field extends View {
         myitasou = false;
         enemyitasou = false;
         if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
-        if (turn_count != 0 && mydecks.size() != 0)
-            myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        //if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         if (mysummonsdead == true) state = Game_state.mynewsummons;
         if (mysummonsdead == false) state = Game_state.battle;
     }
@@ -419,8 +422,7 @@ public class Field extends View {
         myitasou = false;
         enemyitasou = false;
         if (enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0));
-        if (turn_count != 0 && enemydecks.size() != 0)
-            enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (turn_count != 0 && enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0)); //とりあえず最初以外は2ドロー
         if (enemysummonsdead == true) state = Game_state.enemynewsummons;
         if (enemysummonsdead == false) state = Game_state.battle;
     }
@@ -454,8 +456,9 @@ public class Field extends View {
             }
         }
         if (enemy_HP <= 0) enemysummonsdead = true;
-        if (attackstate == Game_state.myattack) wait(2, 1000);
-        if (attackstate == Game_state.enemyattack) state = Game_state.mydraw;
+        if (enemy_HP <= 0 && enemy_rank >= 3) state = Game_state.win;
+        if (state != Game_state.win && attackstate == Game_state.myattack) wait(2, 1000);
+        if (state != Game_state.enemywin && attackstate == Game_state.enemyattack) state = Game_state.mydraw;
 
     }
 
@@ -476,8 +479,9 @@ public class Field extends View {
             }
         }
         if (my_HP <= 0) mysummonsdead = true;
-        if (attackstate == Game_state.enemyattack) wait(1, 1000);
-        if (attackstate == Game_state.myattack) state = Game_state.enemydraw;
+        if (my_HP <= 0 && my_rank >= 3) state = Game_state.enemywin;
+        if (state != Game_state.enemywin && attackstate == Game_state.enemyattack) wait(1, 1000);
+        if (state != Game_state.enemywin && attackstate == Game_state.myattack) state = Game_state.enemydraw;
     }
 
     void mynewsummmons() {
@@ -498,6 +502,8 @@ public class Field extends View {
                         my_y = myplaysummons.y;
                         my_z = myplaysummons.z;
                         my_color = myplaysummons.summonscolor;
+                        mysummonsdead = false;
+                        my_rank += 1;
                         state = Game_state.battle;
                     }
                 }
@@ -509,30 +515,32 @@ public class Field extends View {
         Card check, putsummon;
         Vector<Card> s = new Vector<Card>();
         Class cls;
-        for (int i = enemy_rank; i >= 0; i--) {
+        for (int i = enemy_rank+1; i >= 0; i--) {
             for (int k = 0; k < enemyhands.size(); k++) {
                 check = enemyhands.get(k);
                 cls = check.getClass();
                 if (cls == MonsterCard.class) {
                     MonsterCard n = (MonsterCard) check;
-                    if (n.rank == 0) {
-                         s.addElement(enemyhands.remove(k));
+                    if (n.rank == i) {
+                        s.addElement(enemyhands.remove(k));
                     }
                 }
 
             }
-            Random random = new Random();
-            int ran = random.nextInt(s.size());
-            putsummon = s.remove(ran);
-            enemyplaysummons = (MonsterCard) putsummon;
-            enemyhands.addAll(s);
-            enemy_HP = enemyplaysummons.HP;
-            enemy_x = enemyplaysummons.x;
-            enemy_y = enemyplaysummons.y;
-            enemy_z = enemyplaysummons.z;
-            enemy_color = enemyplaysummons.summonscolor;
-            state = Game_state.battle;
         }
+        Random random = new Random();
+        int ran = random.nextInt(s.size());
+        putsummon = s.remove(ran);
+        enemyplaysummons = (MonsterCard) putsummon;
+        enemyhands.addAll(s);
+        enemy_HP = enemyplaysummons.HP;
+        enemy_x = enemyplaysummons.x;
+        enemy_y = enemyplaysummons.y;
+        enemy_z = enemyplaysummons.z;
+        enemy_color = enemyplaysummons.summonscolor;
+        enemysummonsdead = false;
+        enemy_rank += 1;
+        state = Game_state.battle;
     }
 
     void wait(int i, int t) {
