@@ -255,7 +255,7 @@ public class Field extends View implements OnGestureListener {
         card[23] = new SupportCard(context, R.drawable.s1008, 8);
 
         int[] decka = {0, 4, 6, 7, 8, 10, 17, 17, 23, 23};
-        int[] deckb = {2, 5, 6, 7, 9, 10, 1, 2, 2, 1};
+        int[] deckb = {2, 19, 19, 19, 19, 19, 19, 19, 19, 19};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -688,6 +688,11 @@ public class Field extends View implements OnGestureListener {
                 }
             }
         }
+        if(touchy < 1600){
+            Random random = new Random();
+            int ran = random.nextInt(myhands.size());
+            mytrash.add(myhands.remove(ran));
+        }
     }
 
     void enemynewsummons() {
@@ -708,10 +713,16 @@ public class Field extends View implements OnGestureListener {
             }
         }
         Random random = new Random();
-        int ran = random.nextInt(s.size());
-        putsummon = s.remove(ran);
-        enemyplaysummons = (MonsterCard) putsummon;
-        enemyhands.addAll(s);
+        if(s.size() != 0) {
+            int ran = random.nextInt(s.size());
+            putsummon = s.remove(ran);
+            enemyplaysummons = (MonsterCard) putsummon;
+            enemyhands.addAll(s);
+        }
+        else if(s.size() != 0){
+            int ran = random.nextInt(enemyhands.size());
+            enemytrash.add(enemyhands.remove(ran));
+        }
         enemy_HP = enemyplaysummons.HP;
         enemy_x = enemyplaysummons.x;
         enemy_y = enemyplaysummons.y;
