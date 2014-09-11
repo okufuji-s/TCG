@@ -71,11 +71,12 @@ public class Field extends View implements OnGestureListener {
         supporteffect,
         myeffect,
         enemyeffect,
+        noeffect,
     }
 
     Game_state state = Game_state.mydraw;
     Game_state attackstate = Game_state.myattack;
-    Game_state effectstate = Game_state.enemyeffect,
+    Game_state effectstate = Game_state.noeffect;
 
     class Card {
         Bitmap bitmap;
@@ -173,6 +174,7 @@ public class Field extends View implements OnGestureListener {
                 });
             }
             if (a == 5) {
+                effectstate = Game_state.myeffect;
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -188,6 +190,7 @@ public class Field extends View implements OnGestureListener {
                 });
             }
             if (a == 6) {
+                effectstate = Game_state.enemyeffect;
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -252,7 +255,7 @@ public class Field extends View implements OnGestureListener {
         card[23] = new SupportCard(context, R.drawable.s1008, 8);
 
         int[] decka = {0, 4, 6, 7, 8, 10, 16, 12, 23, 23};
-        int[] deckb = {2, 5, 6, 7, 9, 10, 11, 13, 16, 16};
+        int[] deckb = {2, 5, 6, 7, 9, 10, 11, 23, 23, 23};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -329,7 +332,6 @@ public class Field extends View implements OnGestureListener {
         super.onDraw(c);
         Card test;
 
-
         c.drawBitmap(back, backrect, mydeck, p);
         c.drawBitmap(back, backrect, enemydeck, p);
         p.setARGB(255, 0, 0, 0);
@@ -368,6 +370,18 @@ public class Field extends View implements OnGestureListener {
         }
         if (state == Game_state.win) c.drawText("[あなたの勝利]おめでとうございます", 100, 595, p);
         if (state == Game_state.enemywin) c.drawText("[相手の勝利]残念でした・・・", 200, 595, p);
+        if(effectstate == Game_state.myeffect && myplaysupport != null){
+                switch (myplaysupport.effect){
+                case 0: break;
+                case 8: c.drawText("300回復します。",400,595,p);
+                }
+        }
+        if(effectstate == Game_state.enemyeffect && enemyplaysupport != null){
+                switch (enemyplaysupport.effect){
+                case 0: break;
+                case 8: c.drawText("300回復します。",400,595,p);
+                }
+        }
 
         if(state == Game_state.setsupport && myplaysupport != null) c.drawBitmap(back, backrect, mysupport, p);
         if(state == Game_state.setsupport && enemyplaysupport != null) c.drawBitmap(back, backrect, enemysupports, p);
@@ -534,6 +548,7 @@ public class Field extends View implements OnGestureListener {
 
     void mydraw() {
         attackstate = Game_state.myattack;
+        effectstate = Game_state.noeffect;
         myitasou = false;
         enemyitasou = false;
         if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
@@ -544,6 +559,7 @@ public class Field extends View implements OnGestureListener {
 
     void enemydraw() {
         attackstate = Game_state.enemyattack;
+        effectstate = Game_state.noeffect;
         myitasou = false;
         enemyitasou = false;
         if (enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0));
@@ -731,6 +747,7 @@ public class Field extends View implements OnGestureListener {
         if(attackstate == Game_state.myattack) wait(5,1000);
         if(attackstate == Game_state.enemyattack) wait(2,1000);
     }
+
     void myeffect(){
         if(myplaysupport != null) {
             switch (myplaysupport.effect) {
