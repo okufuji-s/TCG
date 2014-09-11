@@ -69,10 +69,13 @@ public class Field extends View implements OnGestureListener {
         enemywin,
         setsupport,
         supporteffect,
+        myeffect,
+        enemyeffect,
     }
 
     Game_state state = Game_state.mydraw;
     Game_state attackstate = Game_state.myattack;
+    Game_state effectstate = Game_state.enemyeffect,
 
     class Card {
         Bitmap bitmap;
@@ -121,7 +124,6 @@ public class Field extends View implements OnGestureListener {
     String my_color, enemy_color;
     String myselectbutton, enemyselectbutton;
     boolean mysummonsdead = false, enemysummonsdead = false;
-    boolean myopen = false, enemyopen = false;
     Timer timer;
     Handler handler = new Handler();
 
@@ -247,9 +249,9 @@ public class Field extends View implements OnGestureListener {
         card[20] = new SupportCard(context, R.drawable.s1005, 0);
         card[21] = new SupportCard(context, R.drawable.s1006, 0);
         card[22] = new SupportCard(context, R.drawable.s1007, 0);
-        card[23] = new SupportCard(context, R.drawable.s1008, 0);
+        card[23] = new SupportCard(context, R.drawable.s1008, 8);
 
-        int[] decka = {0, 4, 6, 7, 8, 10, 11, 12, 16, 16};
+        int[] decka = {0, 4, 6, 7, 8, 10, 16, 12, 23, 23};
         int[] deckb = {2, 5, 6, 7, 9, 10, 11, 13, 16, 16};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
@@ -371,8 +373,8 @@ public class Field extends View implements OnGestureListener {
         if(state == Game_state.setsupport && enemyplaysupport != null) c.drawBitmap(back, backrect, enemysupports, p);
         if(state == Game_state.battle && myplaysupport != null) c.drawBitmap(back, backrect, mysupport, p);
         if(state == Game_state.battle && enemyplaysupport != null) c.drawBitmap(back, backrect, enemysupports, p);
-        if(state == Game_state.supporteffect && myopen == true) c.drawBitmap(myplaysupport.bitmap,myplaysupport.rect,mysupport,p);
-        if(state == Game_state.supporteffect && enemyopen == true) c.drawBitmap(enemyplaysupport.bitmap,enemyplaysupport.rect,enemysupports,p);
+        if(state == Game_state.supporteffect && myplaysupport != null) c.drawBitmap(myplaysupport.bitmap,myplaysupport.rect,mysupport,p);
+        if(state == Game_state.supporteffect && enemyplaysupport != null) c.drawBitmap(enemyplaysupport.bitmap,enemyplaysupport.rect,enemysupports,p);
         if (myplaysummons != null) c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
         if (enemyplaysummons != null) c.drawBitmap(enemyplaysummons.bitmap, enemyplaysummons.rect, enemysummons, p);
 
@@ -408,6 +410,7 @@ public class Field extends View implements OnGestureListener {
             if(longtap == false){
                 if (state == Game_state.battle) {
                     selectbutton();
+                    Field.this.invalidate();
                     if (attackstate == Game_state.myattack) wait(6, 1000);
                     if (attackstate == Game_state.enemyattack) wait(5, 1000);
                     turn_count++;
@@ -534,7 +537,7 @@ public class Field extends View implements OnGestureListener {
         myitasou = false;
         enemyitasou = false;
         if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
-        //if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         if (mysummonsdead == true) state = Game_state.mynewsummons;
         if (mysummonsdead == false) state = Game_state.setsupport;
     }
@@ -559,7 +562,7 @@ public class Field extends View implements OnGestureListener {
         if (i == 0) enemyselectbutton = "x";
         if (i == 1) enemyselectbutton = "y";
         if (i == 2) enemyselectbutton = "z";
-        state = Game_state.waitbuttle;
+        state = Game_state.supporteffect;
     }
 
     void myattack() {
@@ -585,7 +588,6 @@ public class Field extends View implements OnGestureListener {
         myplaysupport = null;
         mytrash.addAll(trm1);
         trm1.clear();
-        myopen = true;
     }
 
     void enemyattack() {
@@ -611,7 +613,6 @@ public class Field extends View implements OnGestureListener {
         enemyplaysupport = null;
         enemytrash.addAll(trm2);
         trm2.clear();
-        enemyopen = false;
     }
 
     void mynewsummmons() {
@@ -683,7 +684,6 @@ public class Field extends View implements OnGestureListener {
                     Card sup = myhands.elementAt(i);
                     trm1.add(myhands.remove(i));
                     myplaysupport = (SupportCard) sup;
-                    myopen = true;
                     if(attackstate == Game_state.myattack) state = Game_state.battle;
                     if(attackstate == Game_state.enemyattack) wait(4,10);
                 }
@@ -712,7 +712,6 @@ public class Field extends View implements OnGestureListener {
             trm2.add(sup.remove(ran));
             enemyplaysupport = (SupportCard) putsupport;
             enemyhands.addAll(sup);
-            enemyopen = true;
             if(attackstate == Game_state.enemyattack) state = Game_state.battle;
             if(attackstate == Game_state.myattack) wait(3,10);
         }
@@ -723,14 +722,37 @@ public class Field extends View implements OnGestureListener {
     }
 
     void mysupporteffect(){
-        /*効果処理*/
+        myeffect();
         if(attackstate == Game_state.enemyattack) wait(6,1000);
         if(attackstate == Game_state.myattack) wait(1,1000);
     }
     void enemysupporteffect(){
-        /*効果処理*/
+        enemyeffect();
         if(attackstate == Game_state.myattack) wait(5,1000);
         if(attackstate == Game_state.enemyattack) wait(2,1000);
+    }
+    void myeffect(){
+        if(myplaysupport != null) {
+            switch (myplaysupport.effect) {
+                case 0:
+                    break;
+                case 8:
+                    if (my_HP > 0) my_HP += 300;
+                    break;
+            }
+        }
+    }
+    void enemyeffect(){
+        if(enemyplaysupport != null) {
+            switch (enemyplaysupport.effect) {
+                case 0:
+                    break;
+                case 8:
+                    if (enemy_HP > 0) enemy_HP += 300;
+                    break;
+            }
+        }
+
     }
 
     void wait(int i, int t) {
