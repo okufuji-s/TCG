@@ -46,6 +46,8 @@ public class Field extends View implements OnGestureListener {
     Vector<Card> enemyhands = new Vector<Card>();
     Vector<Card> mytrash = new Vector<Card>();
     Vector<Card> enemytrash = new Vector<Card>();
+    Vector<Card> trm1 = new Vector<Card>();
+    Vector<Card> trm2 = new Vector<Card>();
 
     int displaywidth;
     int touchx, touchy;  //触った場所の座標
@@ -169,6 +171,12 @@ public class Field extends View implements OnGestureListener {
                 });
             }
             if (a == 5) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
                 mysupporteffect();
                 handler.post(new Runnable() {
                     @Override
@@ -178,6 +186,12 @@ public class Field extends View implements OnGestureListener {
                 });
             }
             if (a == 6) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Field.this.invalidate();
+                    }
+                });
                 enemysupporteffect();
                 handler.post(new Runnable() {
                     @Override
@@ -192,12 +206,10 @@ public class Field extends View implements OnGestureListener {
 
     GestureDetector gestureDetector;
 
-
     public Field(Context context) {
         super(context);
 
         this.gestureDetector = new GestureDetector(Field.this.getContext(), this);
-
         Resources res = context.getResources();
         back = BitmapFactory.decodeResource(res, R.drawable.back);
         backrect = new Rect(0, 0, back.getWidth(), back.getHeight());
@@ -210,7 +222,7 @@ public class Field extends View implements OnGestureListener {
         enemysummons = new Rect(481, 348, 599, 520);
         enemysupports = new Rect(481, 156, 599, 328);
         enemydeck = new Rect(163, 248, 281, 420);
-        kakudai = new Rect(0,0,236,344);
+        kakudai = new Rect(0,110,236,454);
 
         card[0] = new MonsterCard(context, R.drawable.s0001, 480, 320, 240, 120, 0, "Red");
         card[1] = new MonsterCard(context, R.drawable.s0002, 650, 240, 180, 160, 0, "Blue");
@@ -357,6 +369,8 @@ public class Field extends View implements OnGestureListener {
 
         if(state == Game_state.setsupport && myplaysupport != null) c.drawBitmap(back, backrect, mysupport, p);
         if(state == Game_state.setsupport && enemyplaysupport != null) c.drawBitmap(back, backrect, enemysupports, p);
+        if(state == Game_state.battle && myplaysupport != null) c.drawBitmap(back, backrect, mysupport, p);
+        if(state == Game_state.battle && enemyplaysupport != null) c.drawBitmap(back, backrect, enemysupports, p);
         if(state == Game_state.supporteffect && myopen == true) c.drawBitmap(myplaysupport.bitmap,myplaysupport.rect,mysupport,p);
         if(state == Game_state.supporteffect && enemyopen == true) c.drawBitmap(enemyplaysupport.bitmap,enemyplaysupport.rect,enemysupports,p);
         if (myplaysummons != null) c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
@@ -569,6 +583,9 @@ public class Field extends View implements OnGestureListener {
         if (state != Game_state.win && attackstate == Game_state.myattack) wait(2, 1000);
         if (state != Game_state.win && attackstate == Game_state.enemyattack) state = Game_state.mydraw;
         myplaysupport = null;
+        mytrash.addAll(trm1);
+        trm1.clear();
+        myopen = true;
     }
 
     void enemyattack() {
@@ -592,6 +609,9 @@ public class Field extends View implements OnGestureListener {
         if (state != Game_state.enemywin && attackstate == Game_state.enemyattack) wait(1, 1000);
         if (state != Game_state.enemywin && attackstate == Game_state.myattack) state = Game_state.enemydraw;
         enemyplaysupport = null;
+        enemytrash.addAll(trm2);
+        trm2.clear();
+        enemyopen = false;
     }
 
     void mynewsummmons() {
@@ -660,13 +680,15 @@ public class Field extends View implements OnGestureListener {
                 check = myhands.get(i);
                 Class cls = check.getClass();
                 if (cls == SupportCard.class) {
-                    Card sup = myhands.remove(i);
+                    Card sup = myhands.elementAt(i);
+                    trm1.add(myhands.remove(i));
                     myplaysupport = (SupportCard) sup;
+                    myopen = true;
                     if(attackstate == Game_state.myattack) state = Game_state.battle;
                     if(attackstate == Game_state.enemyattack) wait(4,10);
                 }
             }
-            if(touchy > 1600){
+            if(touchy > 1400){
                 if(attackstate == Game_state.myattack) state = Game_state.battle;
                 if(attackstate == Game_state.enemyattack) wait(4,10);
             }
@@ -686,9 +708,11 @@ public class Field extends View implements OnGestureListener {
         if(sup.size() != 0) {
             Random random = new Random();
             int ran = random.nextInt(sup.size());
-            putsupport = sup.remove(ran);
+            putsupport = sup.elementAt(ran);
+            trm2.add(sup.remove(ran));
             enemyplaysupport = (SupportCard) putsupport;
             enemyhands.addAll(sup);
+            enemyopen = true;
             if(attackstate == Game_state.enemyattack) state = Game_state.battle;
             if(attackstate == Game_state.myattack) wait(3,10);
         }
@@ -699,13 +723,11 @@ public class Field extends View implements OnGestureListener {
     }
 
     void mysupporteffect(){
-        myopen = true;
         /*効果処理*/
         if(attackstate == Game_state.enemyattack) wait(6,1000);
         if(attackstate == Game_state.myattack) wait(1,1000);
     }
     void enemysupporteffect(){
-        enemyopen = true;
         /*効果処理*/
         if(attackstate == Game_state.myattack) wait(5,1000);
         if(attackstate == Game_state.enemyattack) wait(2,1000);
