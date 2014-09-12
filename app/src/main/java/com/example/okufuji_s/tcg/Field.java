@@ -36,7 +36,6 @@ public class Field extends View implements OnGestureListener {
     Rect backrect, itairect, kakudai;
     Rect mysummons, mysupport, mydeck;
     Rect enemysummons, enemysupports, enemydeck;
-    //Vector<Card> mydecks,enemydecks;
     boolean myitasou = false, enemyitasou = false;
     boolean longtap = false;
     boolean mybutton = false,enemybutton = false;
@@ -296,7 +295,7 @@ public class Field extends View implements OnGestureListener {
         card[26] = new SupportCard(context, R.drawable.s1048, 11);
 
         int[] decka = {0, 4, 7, 8, 11, 12, 18, 17, 19, 23};
-        int[] deckb = {2, 6, 5, 9, 10, 15, 14, 24, 25, 26};
+        int[] deckb = {1, 5, 6, 9, 10, 15, 15, 24, 25, 26};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -838,9 +837,9 @@ public class Field extends View implements OnGestureListener {
                     putsupport = sup.elementAt(ran);
                     trm2.add(sup.remove(ran));
                     enemyplaysupport = (SupportCard) putsupport;
-                    enemyhands.addAll(sup);
-                    sup.clear();
                 }
+                enemyhands.addAll(sup);
+                sup.clear();
                 if (attackstate == Game_state.enemyattack) state = Game_state.battle;
                 if (attackstate == Game_state.myattack) wait(3, 10);
             }
@@ -925,13 +924,13 @@ public class Field extends View implements OnGestureListener {
                     break;
                 case 7: if (enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0)); break;
                 case 8:
-                    handes = randam.nextInt(enemyhands.size());
+                    handes = randam.nextInt(myhands.size());
                     mytrash.addElement(myhands.remove(handes));
                     break;
                 case 9:
                     for(int i = 0; i < 2; i++){
-                        handes = randam.nextInt(enemyhands.size());
-                        enemytrash.addElement(enemyhands.remove(handes));
+                        handes = randam.nextInt(myhands.size());
+                        mytrash.addElement(myhands.remove(handes));
                     }
                     break;
             }
