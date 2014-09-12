@@ -668,6 +668,13 @@ public class Field extends View implements OnGestureListener {
         if (i == 0) enemyselectbutton = "x";
         if (i == 1) enemyselectbutton = "y";
         if (i == 2) enemyselectbutton = "z";
+        if (enemy_rank == 1){
+            if(enemy_color.equals("Blue") && my_color.equals("Red")) enemyselectbutton = "z";
+        }
+        if (enemyplaysummons.ef == 9){
+            i = random.nextInt(2);
+            if (i == 1) enemyselectbutton = "z";
+        }
         state = Game_state.supporteffect;
     }
 
