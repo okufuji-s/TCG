@@ -421,7 +421,7 @@ public class Field extends View implements OnGestureListener {
                 case 2:
                 case 3:
                 case 4:
-                    c.drawText("攻撃力を上げます。", 400, 595, p);
+                    c.drawText("攻撃力を上げます。", 350, 595, p);
                     break;
                 case 8:
                     c.drawText("300回復します。", 400, 595, p);
