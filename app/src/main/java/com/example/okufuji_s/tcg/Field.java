@@ -276,13 +276,13 @@ public class Field extends View implements OnGestureListener {
         card[6] = new MonsterCard(context, R.drawable.s0007, 810, 420, 350, 330, 1, "Green",5);
         card[7] = new MonsterCard(context, R.drawable.s0008, 780, 450, 360, 270, 1, "Yellow",6); //3 = 対黄　4 = 対赤　5 = 対青　6 = 対緑
         card[8] = new MonsterCard(context, R.drawable.s0009, 950, 700, 480, 370, 2, "Red",0);
-        card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue",0);
+        card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue",7);
         card[10] = new MonsterCard(context, R.drawable.s0011, 990, 630, 340, 190, 2, "Green",0);
-        card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow",0);
+        card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow",8);
         card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red",1);
         card[13] = new MonsterCard(context, R.drawable.s0014, 1960, 590, 420, 370, 3, "Blue",0);
         card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green",2);
-        card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow",0);
+        card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow",9);
         card[16] = new SupportCard(context, R.drawable.s1001, 1);
         card[17] = new SupportCard(context, R.drawable.s1002, 2);
         card[18] = new SupportCard(context, R.drawable.s1003, 3);
@@ -398,9 +398,11 @@ public class Field extends View implements OnGestureListener {
 
         if (state == Game_state.setfirst) c.drawText("ランク0の最初の召喚獣を選んでください", 100, 595, p);
         if (state == Game_state.mynewsummons) c.drawText("[瀕死しています]召喚獣をプレイしてください", 0, 595, p);
+        if (state == Game_state.mynewsummons) c.drawText("蘇生の画面の上のほうをタップしてください。",0,1695,p);
         if (state == Game_state.enemynewsummons) c.drawText("相手は新しい召喚獣をプレイします。", 150, 595, p);
         if (state == Game_state.mydraw) c.drawText("あなたのターンです。タップでドロー", 100, 595, p);
         if (state == Game_state.setsupport) c.drawText("補助カードを選択してください。", 150, 595, p);
+        if (state == Game_state.setsupport) c.drawText("使わない場合は手札の下をタップしてください。",0,1695,p);
         if (state == Game_state.battle && attackstate == Game_state.myattack) {
             c.drawText("[先行]戦闘です。↓のボタンをタップ！", 100, 595, p);
             c.drawText(" x    y    z ", 0, 1600, button);
@@ -640,8 +642,7 @@ public class Field extends View implements OnGestureListener {
         myitasou = false;
         enemyitasou = false;
         if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0));
-        if (turn_count != 0 && mydecks.size() != 0)
-            myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
+        if (turn_count != 0 && mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); //とりあえず最初以外は2ドロー
         if (mysummonsdead == true) state = Game_state.mynewsummons;
         if (mysummonsdead == false) state = Game_state.setsupport;
     }
@@ -747,6 +748,7 @@ public class Field extends View implements OnGestureListener {
             Random random = new Random();
             int ran = random.nextInt(myhands.size());
             mytrash.add(myhands.remove(ran));
+            mysummonsdead = false;
             state = Game_state.setsupport;
             my_rank+=1;
         }
@@ -872,6 +874,8 @@ public class Field extends View implements OnGestureListener {
 
     void myeffectsummons(){
         if (mysummonsdead == false && myselectbutton.equals("z")) {
+            Random randam = new Random();
+            int handes;
             switch (myplaysummons.ef) {
                 case 0:
                     enemy_x = 0;
@@ -886,12 +890,25 @@ public class Field extends View implements OnGestureListener {
                     break;
                 case 6: if(enemy_color.equals("Green")) my_z *= 3;
                     break;
+                case 7: if (mydecks.size() != 0) myhands.addElement(mydecks.remove(0)); break;
+                case 8:
+                    handes = randam.nextInt(enemyhands.size());
+                    enemytrash.addElement(enemyhands.remove(handes));
+                    break;
+                case 9:
+                    for(int i = 0; i < 2; i++){
+                        handes = randam.nextInt(enemyhands.size());
+                        enemytrash.addElement(enemyhands.remove(handes));
+                    }
+                    break;
             }
         }
         mybutton = true;
     }
     void enemyeffectsummons(){
         if (enemysummonsdead == false && enemyselectbutton.equals("z")) {
+            Random randam = new Random();
+            int handes;
             switch (enemyplaysummons.ef) {
                 case 0:
                     my_x = 0;
@@ -905,6 +922,17 @@ public class Field extends View implements OnGestureListener {
                 case 5: if(my_color.equals("Blue")) enemy_z *= 3;
                     break;
                 case 6: if(my_color.equals("Green")) enemy_z *= 3;
+                    break;
+                case 7: if (enemydecks.size() != 0) enemyhands.addElement(enemydecks.remove(0)); break;
+                case 8:
+                    handes = randam.nextInt(enemyhands.size());
+                    mytrash.addElement(myhands.remove(handes));
+                    break;
+                case 9:
+                    for(int i = 0; i < 2; i++){
+                        handes = randam.nextInt(enemyhands.size());
+                        enemytrash.addElement(enemyhands.remove(handes));
+                    }
                     break;
             }
         }
