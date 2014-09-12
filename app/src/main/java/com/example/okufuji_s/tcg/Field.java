@@ -295,7 +295,7 @@ public class Field extends View implements OnGestureListener {
         card[26] = new SupportCard(context, R.drawable.s1048, 11);
 
         int[] decka = {0, 4, 7, 8, 11, 12, 18, 17, 19, 23};
-        int[] deckb = {1, 5, 6, 9, 10, 15, 15, 24, 25, 26};
+        int[] deckb = {1, 5, 6, 9, 10, 15, 15, 24, 23, 16};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -672,8 +672,9 @@ public class Field extends View implements OnGestureListener {
             if(enemy_color.equals("Blue") && my_color.equals("Red")) enemyselectbutton = "z";
         }
         if (enemyplaysummons.ef == 9){
-            i = random.nextInt(2);
-            if (i == 1) enemyselectbutton = "z";
+            i = random.nextInt(6);
+            if (i == 0 || i == 3) enemyselectbutton = "x";
+            if (i == 1 || i == 2 || i == 4) enemyselectbutton = "z";
         }
         state = Game_state.supporteffect;
     }
