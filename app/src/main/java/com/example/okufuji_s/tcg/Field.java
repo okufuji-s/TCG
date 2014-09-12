@@ -296,7 +296,7 @@ public class Field extends View implements OnGestureListener {
         card[26] = new SupportCard(context, R.drawable.s1048, 11);
 
         int[] decka = {0, 4, 7, 8, 11, 12, 18, 17, 19, 23};
-        int[] deckb = {2, 6, 5, 9, 10, 11, 14, 24, 25, 26};
+        int[] deckb = {2, 6, 5, 9, 10, 15, 14, 24, 25, 26};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -579,6 +579,8 @@ public class Field extends View implements OnGestureListener {
                 kakudaicard = myhands.get(i);
             }
         }
+        if(481 < touchx && touchx < 599 && 720 < touchy && touchy < 892) kakudaicard = myplaysummons;
+        if(481 < touchx && touchx < 599 && 348 < touchy && touchy < 520) kakudaicard = enemyplaysummons;
         Field.this.invalidate();
     }
 
@@ -815,32 +817,34 @@ public class Field extends View implements OnGestureListener {
     }
 
     void enemysetsupport() {
-        Card check;
-        Class cls;
-        Vector<Card> sup;
-        Card putsupport;
-        sup = new Vector<Card>();
-        for (int k = 0; k < enemyhands.size(); k++) {
-            check = enemyhands.get(k);
-            cls = check.getClass();
-            if (cls == SupportCard.class) {
-                sup.addElement(enemyhands.remove(k));
+            Card check;
+            Class cls;
+            Vector<Card> sup;
+            Card putsupport;
+            sup = new Vector<Card>();
+            for (int k = 0; k < enemyhands.size(); k++) {
+                check = enemyhands.get(k);
+                cls = check.getClass();
+                if (cls == SupportCard.class) {
+                    sup.addElement(enemyhands.remove(k));
+                }
             }
-        }
-        if (sup.size() != 0) {
-            Log.d("log","sup size" + String.valueOf(sup.size()));
-            Random random = new Random();
-            int ran = random.nextInt(sup.size());
-            putsupport = sup.elementAt(ran);
-            trm2.add(sup.remove(ran));
-            enemyplaysupport = (SupportCard) putsupport;
-            enemyhands.addAll(sup);
-            sup.clear();
-            if (attackstate == Game_state.enemyattack) state = Game_state.battle;
-            if (attackstate == Game_state.myattack) wait(3, 10);
-        } if (sup.size() == 0) {
-            if (attackstate == Game_state.enemyattack) state = Game_state.battle;
-            if (attackstate == Game_state.myattack) wait(3, 10);
+            if (sup.size() != 0) {
+                if(mysummonsdead == false && enemysummonsdead == false) {
+                    Random random = new Random();
+                    int ran = random.nextInt(sup.size());
+                    putsupport = sup.elementAt(ran);
+                    trm2.add(sup.remove(ran));
+                    enemyplaysupport = (SupportCard) putsupport;
+                    enemyhands.addAll(sup);
+                    sup.clear();
+                }
+                if (attackstate == Game_state.enemyattack) state = Game_state.battle;
+                if (attackstate == Game_state.myattack) wait(3, 10);
+            }
+            if (sup.size() == 0) {
+                if (attackstate == Game_state.enemyattack) state = Game_state.battle;
+                if (attackstate == Game_state.myattack) wait(3, 10);
         }
     }
 
