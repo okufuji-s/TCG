@@ -123,7 +123,7 @@ public class Field extends View implements OnGestureListener {
         }
     }
 
-    protected Card[] card = new Card[24];
+    protected Card[] card = new Card[27];
     Card kakudaicard;
     MonsterCard myplaysummons, enemyplaysummons; //場に出ているものそれ自体
     SupportCard myplaysupport, enemyplaysupport;
@@ -265,7 +265,7 @@ public class Field extends View implements OnGestureListener {
         enemysummons = new Rect(481, 348, 599, 520);
         enemysupports = new Rect(481, 156, 599, 328);
         enemydeck = new Rect(163, 248, 281, 420);
-        kakudai = new Rect(0, 110, 236, 454);
+        kakudai = new Rect(0, 110, 354, 626);
 
         card[0] = new MonsterCard(context, R.drawable.s0001, 480, 320, 240, 120, 0, "Red", 0);
         card[1] = new MonsterCard(context, R.drawable.s0002, 650, 240, 180, 160, 0, "Blue",0);
@@ -279,9 +279,9 @@ public class Field extends View implements OnGestureListener {
         card[9] = new MonsterCard(context, R.drawable.s0010, 1190, 560, 310, 190, 2, "Blue",0);
         card[10] = new MonsterCard(context, R.drawable.s0011, 990, 630, 340, 190, 2, "Green",0);
         card[11] = new MonsterCard(context, R.drawable.s0012, 1090, 630, 340, 190, 2, "Yellow",0);
-        card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red",0);
+        card[12] = new MonsterCard(context, R.drawable.s0013, 1690, 810, 520, 380, 3, "Red",1);
         card[13] = new MonsterCard(context, R.drawable.s0014, 1960, 590, 420, 370, 3, "Blue",0);
-        card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green",0);
+        card[14] = new MonsterCard(context, R.drawable.s0015, 1800, 700, 500, 400, 3, "Green",2);
         card[15] = new MonsterCard(context, R.drawable.s0016, 1470, 660, 470, 400, 3, "Yellow",0);
         card[16] = new SupportCard(context, R.drawable.s1001, 1);
         card[17] = new SupportCard(context, R.drawable.s1002, 2);
@@ -291,9 +291,12 @@ public class Field extends View implements OnGestureListener {
         card[21] = new SupportCard(context, R.drawable.s1006, 0);
         card[22] = new SupportCard(context, R.drawable.s1007, 0);
         card[23] = new SupportCard(context, R.drawable.s1008, 8);
+        card[24] = new SupportCard(context, R.drawable.s1046, 9);
+        card[25] = new SupportCard(context, R.drawable.s1047, 10);
+        card[26] = new SupportCard(context, R.drawable.s1048, 11);
 
-        int[] decka = {0, 4, 6, 7, 8, 10, 17, 17, 23, 23};
-        int[] deckb = {2, 19, 19, 19, 19, 19, 19, 19, 19, 19};
+        int[] decka = {0, 4, 7, 8, 11, 12, 18, 17, 19, 23};
+        int[] deckb = {2, 6, 5, 9, 10, 11, 14, 24, 25, 26};
         for (int k = 0; k < 10; k++) {
             for (int i = 0; i < 4; i++) {
                 mydecks.addElement(card[decka[k]]);
@@ -422,6 +425,11 @@ public class Field extends View implements OnGestureListener {
                 case 8:
                     c.drawText("300回復します。", 400, 595, p);
                     break;
+                case 9:
+                case 10:
+                case 11:
+                    c.drawText("攻撃力が0になります。",300,595,p);
+                    break;
             }
         }
         if (effectstate == Game_state.enemyeffect && enemyplaysupport != null) {
@@ -437,6 +445,10 @@ public class Field extends View implements OnGestureListener {
                 case 8:
                     c.drawText("300回復します。", 400, 595, p);
                     break;
+                case 9:
+                case 10:
+                case 11:
+                    c.drawText("攻撃力が0になります。",300,595,p);
             }
         }
 
@@ -652,8 +664,8 @@ public class Field extends View implements OnGestureListener {
         Random random = new Random();
         int i = random.nextInt(3);
         if (i == 0) enemyselectbutton = "x";
-        if (i == 1) enemyselectbutton = "x";
-        if (i == 2) enemyselectbutton = "x";
+        if (i == 1) enemyselectbutton = "y";
+        if (i == 2) enemyselectbutton = "z";
         state = Game_state.supporteffect;
     }
 
@@ -723,22 +735,24 @@ public class Field extends View implements OnGestureListener {
                         putsummon = myhands.remove(i);
                         myplaysummons = (MonsterCard) putsummon;
                         mysummonsdead = false;
+                        state = Game_state.setsupport;
+                        my_rank+=1;
                     }
                 }
             }
         }
-        if(touchy < 1600){
+        if(touchy < 300){
             Random random = new Random();
             int ran = random.nextInt(myhands.size());
             mytrash.add(myhands.remove(ran));
+            state = Game_state.setsupport;
+            my_rank+=1;
         }
-        my_rank+=1;
         my_HP = myplaysummons.HP;
         my_x = myplaysummons.x;
         my_y = myplaysummons.y;
         my_z = myplaysummons.z;
         my_color = myplaysummons.summonscolor;
-        state = Game_state.setsupport;
     }
 
     void enemynewsummons() {
@@ -915,6 +929,12 @@ public class Field extends View implements OnGestureListener {
                 case 8:
                     if (my_HP > 0) my_HP += 300;
                     break;
+                case 9:
+                    enemy_x = 0; break;
+                case 10:
+                    enemy_y = 0; break;
+                case 11:
+                    enemy_z = 0; break;
             }
         }
     }
@@ -941,6 +961,12 @@ public class Field extends View implements OnGestureListener {
                 case 8:
                     if (enemy_HP > 0) enemy_HP += 300;
                     break;
+                case 9:
+                    my_x = 0; break;
+                case 10:
+                    my_y = 0; break;
+                case 11:
+                    my_z = 0; break;
             }
         }
 
