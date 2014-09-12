@@ -628,7 +628,12 @@ public class Field extends View implements OnGestureListener {
                         enemy_y = enemyplaysummons.y;
                         enemy_z = enemyplaysummons.z;
                         enemy_color = enemyplaysummons.summonscolor;
-                        state = Game_state.mydraw;
+                        Random rand = new Random();
+                        int coin = rand.nextInt(2);
+                        switch (coin) {
+                            case 0: state = Game_state.mydraw; break;
+                            case 1: state = Game_state.enemydraw; break;
+                        }
                     }
                 }
             }
