@@ -465,15 +465,13 @@ public class Field extends View implements OnGestureListener {
             c.drawBitmap(myplaysupport.bitmap, myplaysupport.rect, mysupport, p);
         if (state == Game_state.supporteffect && enemyplaysupport != null)
             c.drawBitmap(enemyplaysupport.bitmap, enemyplaysupport.rect, enemysupports, p);
-        if (myplaysummons != null)
-            c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
-        if (enemyplaysummons != null)
-            c.drawBitmap(enemyplaysummons.bitmap, enemyplaysummons.rect, enemysummons, p);
-        if(mybutton == true){
+        if (myplaysummons != null && mysummonsdead == false) c.drawBitmap(myplaysummons.bitmap, myplaysummons.rect, mysummons, p);
+        if (enemyplaysummons != null && enemysummonsdead == false) c.drawBitmap(enemyplaysummons.bitmap, enemyplaysummons.rect, enemysummons, p);
+        if(mybutton == true && mysummonsdead == false){
             c.drawText(myselectbutton,475,890,button);
             mybutton = false;
         }
-        if(enemybutton == true){
+        if(enemybutton == true && enemysummonsdead == false){
             c.drawText(enemyselectbutton,475,520,button);
             enemybutton = false;
         }
@@ -490,10 +488,11 @@ public class Field extends View implements OnGestureListener {
             test = enemyhands.get(i);
             c.drawBitmap(back, backrect, enemyhandsrect[i], p);
         }
+        if (mysummonsdead == true) c.drawBitmap(back,backrect,mysummons,p);
+        if (enemysummonsdead == true) c.drawBitmap(back,backrect,enemysummons,p);
+
         if (myitasou == true) c.drawBitmap(itai, itairect, mysummons, p);
         if (enemyitasou == true) c.drawBitmap(itai, itairect, enemysummons, p);
-
-
     }
 
     @Override
@@ -521,9 +520,11 @@ public class Field extends View implements OnGestureListener {
                 }
                 if (state == Game_state.enemydraw) {
                     enemydraw();
+                    enemybutton = false;
                 }
                 if (state == Game_state.mydraw) {
                     mydraw();
+                    mybutton = false;
                 }
                 if (state == Game_state.setfirst) {
                     //最初にランク0を出そうとするところ
