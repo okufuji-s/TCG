@@ -128,7 +128,7 @@ public class Field extends View implements OnGestureListener {
     SupportCard myplaysupport, enemyplaysupport;
     int my_rank = 0, my_HP, enemy_rank = 0, enemy_HP, my_x, my_y, my_z, enemy_x, enemy_y, enemy_z;
     String my_color, enemy_color;
-    String myselectbutton, enemyselectbutton;
+    String myselectbutton="x", enemyselectbutton;
     boolean mysummonsdead = false, enemysummonsdead = false;
     Timer timer;
     Handler handler = new Handler();
